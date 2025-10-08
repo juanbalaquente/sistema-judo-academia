@@ -59,7 +59,7 @@ function updateStatusPagamento($pdo, $inscricao_id, $novo_status) {
     }
 }
 
-// NOVO: Processa Excluir Inscrição
+// Processa Excluir Inscrição
 function deleteInscricao($pdo, $inscricao_id) {
     try {
         $sql = "DELETE FROM inscricoes WHERE id = :id";
@@ -76,6 +76,24 @@ function deleteInscricao($pdo, $inscricao_id) {
     }
 }
 
+// NOVO: Processa a Atualização da Colocação
+function updateColocacao($pdo, $inscricao_id, $colocacao) {
+    try {
+        // Aceita NULL, números ou strings (ex: '1º Lugar', 'Sem Classificação', NULL)
+        $sql = "UPDATE inscricoes SET colocacao = :colocacao WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        // Filtra para garantir que o input seja tratado como string, se não for nulo
+        $colocacao_value = !empty($colocacao) ? htmlspecialchars(trim($colocacao)) : NULL;
+        $stmt->bindParam(':colocacao', $colocacao_value);
+        $stmt->bindParam(':id', $inscricao_id);
+        $stmt->execute();
+        
+        return '<p class="success">Colocação atualizada!</p>';
+    } catch (Exception $e) {
+        return '<p class="error">Erro ao atualizar colocação: ' . $e->getMessage() . '</p>';
+    }
+}
+
 
 // =================================================================
 // 2. PROCESSAMENTO POST
@@ -89,12 +107,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($inscricao_id) {
             $message = updateStatusPagamento($pdo, $inscricao_id, $novo_status);
         }
-    } elseif (isset($_POST['action']) && $_POST['action'] == 'delete_inscricao') { // NOVO: AÇÃO DE EXCLUIR
+    } elseif (isset($_POST['action']) && $_POST['action'] == 'delete_inscricao') {
         $inscricao_id = filter_input(INPUT_POST, 'inscricao_id', FILTER_VALIDATE_INT);
         if ($inscricao_id) {
             $message = deleteInscricao($pdo, $inscricao_id);
         } else {
              $message = '<p class="error">ID de inscrição inválido para exclusão.</p>';
+        }
+    } elseif (isset($_POST['action']) && $_POST['action'] == 'update_colocacao') { // NOVO: AÇÃO DE COLOCAÇÃO
+        $inscricao_id = filter_input(INPUT_POST, 'inscricao_id', FILTER_VALIDATE_INT);
+        $colocacao = filter_input(INPUT_POST, 'colocacao', FILTER_SANITIZE_STRING);
+        if ($inscricao_id) {
+            $message = updateColocacao($pdo, $inscricao_id, $colocacao);
         }
     }
 }
@@ -118,7 +142,7 @@ try {
     $message .= '<p class="error">Erro ao carregar dados do campeonato.</p>';
 }
 
-// B) Busca os Alunos Inscritos (CORRIGIDO: nome e kyu)
+// B) Busca os Alunos Inscritos (AGORA INCLUI colocacao)
 if ($campeonato_id) {
     try {
         $sql = "SELECT 
@@ -126,7 +150,8 @@ if ($campeonato_id) {
                     a.nome,          
                     a.kyu,           
                     i.status_pagamento,
-                    i.data_inscricao
+                    i.data_inscricao,
+                    i.colocacao      /* NOVO: Colocação */
                 FROM inscricoes i
                 JOIN alunos a ON i.aluno_id = a.id
                 WHERE i.campeonato_id = :cid
@@ -142,7 +167,6 @@ if ($campeonato_id) {
         $stmt_disponiveis = $pdo->prepare($sql_disponiveis);
         $stmt_disponiveis->execute([':cid' => $campeonato_id]);
         
-        // Renomeando a chave 'nome' para 'nome_completo'
         $alunos_disponiveis = array_map(function($aluno) {
             return ['id' => $aluno['id'], 'nome_completo' => $aluno['nome']];
         }, $stmt_disponiveis->fetchAll());
@@ -194,6 +218,19 @@ function format_currency($value) {
     .cadastrar-inscricao-box h2 {
         margin-top: 0;
         color: var(--color-primary);
+    }
+
+    .colocacao-form {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .colocacao-form input {
+        width: 80px;
+        padding: 5px;
+        text-align: center;
+        font-size: 0.9em;
     }
     </style>
 </head>
@@ -263,9 +300,9 @@ function format_currency($value) {
                         <tr>
                             <th>Nome do Judoca</th>
                             <th>Faixa</th>
-                            <th>Inscrição em</th>
-                            <th>Status de Pagamento</th>
-                            <th>Ação</th>
+                            <th>Status Pagamento</th>
+                            <th>Colocação</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -273,11 +310,26 @@ function format_currency($value) {
                         <tr>
                             <td><?php echo htmlspecialchars($inscrito['nome']); ?></td>
                             <td><?php echo htmlspecialchars($inscrito['kyu']); ?></td>
-                            <td><?php echo date('d/m/Y', strtotime($inscrito['data_inscricao'])); ?></td>
                             <td
                                 class="<?php echo ($inscrito['status_pagamento'] == 'pago') ? 'status-success' : 'status-danger'; ?>">
                                 <?php echo ucfirst($inscrito['status_pagamento']); ?>
                             </td>
+
+                            <td>
+                                <form method="POST"
+                                    action="gerenciar_inscricoes.php?campeonato_id=<?php echo $campeonato_id; ?>"
+                                    class="colocacao-form">
+                                    <input type="hidden" name="action" value="update_colocacao">
+                                    <input type="hidden" name="inscricao_id"
+                                        value="<?php echo $inscrito['inscricao_id']; ?>">
+                                    <input type="text" name="colocacao"
+                                        value="<?php echo htmlspecialchars($inscrito['colocacao'] ?? ''); ?>"
+                                        placeholder="Ex: 1º ou Bronze">
+                                    <button type="submit" class="btn-acao editar"
+                                        style="background-color: #3498db; color: white; padding: 5px 8px;">Salvar</button>
+                                </form>
+                            </td>
+
                             <td>
                                 <?php if ($inscrito['status_pagamento'] == 'pendente'): ?>
                                 <form method="POST"
@@ -309,7 +361,7 @@ function format_currency($value) {
                                     <input type="hidden" name="inscricao_id"
                                         value="<?php echo $inscrito['inscricao_id']; ?>">
                                     <button type="submit" class="btn-acao excluir"
-                                        onclick="return confirm('Tem certeza que deseja EXCLUIR a inscrição de <?php echo htmlspecialchars($inscrito['nome']); ?> deste campeonato? Esta ação é irreversível.');">
+                                        onclick="return confirm('Tem certeza que deseja EXCLUIR a inscrição de <?php echo htmlspecialchars($inscrito['nome']); ?>?');">
                                         Excluir
                                     </button>
                                 </form>
