@@ -1,4 +1,5 @@
 <?php
+require 'includes/auth_check.php'; 
 // require 'includes/auth_check.php'; // Adicionar se estiver usando a autenticação
 
 require 'includes/db_connect.php'; 

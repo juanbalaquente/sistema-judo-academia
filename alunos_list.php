@@ -1,4 +1,5 @@
 <?php
+require 'includes/auth_check.php'; 
 // =================================================================
 // 1. LÓGICA PHP: CONEXÃO, FILTRO E CONSULTA AO BANCO DE DADOS
 // =================================================================
