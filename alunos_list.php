@@ -146,87 +146,102 @@ try {
 <body>
 
     <div class="container">
-        <h1>Lista de Alunos Cadastrados</h1>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1>Lista de Alunos Cadastrados</h1>
+                <p>
+                    Olá, <strong><?php echo htmlspecialchars($_SESSION['username'] ?? 'Usuário'); ?></strong>!
+                    | <a href="logout.php">Sair</a>
+                </p>
+            </div>
 
-        <div class="link-cadastro">
-            <a href="index.php">← Voltar para o Cadastro</a>
-        </div>
+            <div class="link-cadastro">
+                <a href="index.php">← Voltar para o Cadastro</a>
+            </div>
 
-        <?php 
+            ```
+
+            Feito isso, seu sistema estará protegido! Qual será o próximo desafio: **Paginação** ou **Aprimoramento do
+            CSS**?
+
+            <?php 
         echo $message; 
         ?>
 
-        <form method="GET" action="alunos_list.php" class="form-filtro">
-            <div>
-                <label for="nome">Filtrar por Nome:</label>
-                <input type="text" id="nome" name="nome" placeholder="Digite o nome do aluno"
-                    value="<?php echo htmlspecialchars($search_nome); ?>">
-            </div>
+            <form method="GET" action="alunos_list.php" class="form-filtro">
+                <div>
+                    <label for="nome">Filtrar por Nome:</label>
+                    <input type="text" id="nome" name="nome" placeholder="Digite o nome do aluno"
+                        value="<?php echo htmlspecialchars($search_nome); ?>">
+                </div>
 
-            <div>
-                <label for="kyu">Filtrar por Faixa (Kyu):</label>
-                <select id="kyu" name="kyu">
-                    <option value="">Todas as Faixas</option>
-                    <option value="Branca" <?php if ($search_kyu == 'Branca') echo 'selected'; ?>>Branca</option>
-                    <option value="Cinza" <?php if ($search_kyu == 'Cinza') echo 'selected'; ?>>Cinza</option>
-                    <option value="Azul" <?php if ($search_kyu == 'Azul') echo 'selected'; ?>>Azul</option>
-                    <option value="Amarela" <?php if ($search_kyu == 'Amarela') echo 'selected'; ?>>Amarela</option>
-                    <option value="Laranja" <?php if ($search_kyu == 'Laranja') echo 'selected'; ?>>Laranja</option>
-                    <option value="Verde" <?php if ($search_kyu == 'Verde') echo 'selected'; ?>>Verde</option>
-                    <option value="Roxa" <?php if ($search_kyu == 'Roxa') echo 'selected'; ?>>Roxa</option>
-                    <option value="Marrom" <?php if ($search_kyu == 'Marrom') echo 'selected'; ?>>Marrom</option>
-                    <option value="Preta" <?php if ($search_kyu == 'Preta') echo 'selected'; ?>>Preta (Shodan)</option>
-                </select>
-            </div>
+                <div>
+                    <label for="kyu">Filtrar por Faixa (Kyu):</label>
+                    <select id="kyu" name="kyu">
+                        <option value="">Todas as Faixas</option>
+                        <option value="Branca" <?php if ($search_kyu == 'Branca') echo 'selected'; ?>>Branca</option>
+                        <option value="Cinza" <?php if ($search_kyu == 'Cinza') echo 'selected'; ?>>Cinza</option>
+                        <option value="Azul" <?php if ($search_kyu == 'Azul') echo 'selected'; ?>>Azul</option>
+                        <option value="Amarela" <?php if ($search_kyu == 'Amarela') echo 'selected'; ?>>Amarela</option>
+                        <option value="Laranja" <?php if ($search_kyu == 'Laranja') echo 'selected'; ?>>Laranja</option>
+                        <option value="Verde" <?php if ($search_kyu == 'Verde') echo 'selected'; ?>>Verde</option>
+                        <option value="Roxa" <?php if ($search_kyu == 'Roxa') echo 'selected'; ?>>Roxa</option>
+                        <option value="Marrom" <?php if ($search_kyu == 'Marrom') echo 'selected'; ?>>Marrom</option>
+                        <option value="Preta" <?php if ($search_kyu == 'Preta') echo 'selected'; ?>>Preta (Shodan)
+                        </option>
+                    </select>
+                </div>
 
-            <button type="submit">Pesquisar/Filtrar</button>
-            <?php if ($search_nome !== '' || $search_kyu !== ''): ?>
-            <a href="alunos_list.php" class="btn-clear"
-                style="padding: 8px 15px; background-color: #dc3545; color: white; border-radius: 4px; text-decoration: none;">Limpar
-                Filtro</a>
-            <?php endif; ?>
-        </form>
+                <button type="submit">Pesquisar/Filtrar</button>
+                <?php if ($search_nome !== '' || $search_kyu !== ''): ?>
+                <a href="alunos_list.php" class="btn-clear"
+                    style="padding: 8px 15px; background-color: #dc3545; color: white; border-radius: 4px; text-decoration: none;">Limpar
+                    Filtro</a>
+                <?php endif; ?>
+            </form>
 
 
-        <?php if (count($alunos) > 0): ?>
-        <table class="tabela-alunos">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Faixa (Kyu)</th>
-                    <th>Peso (kg)</th>
-                    <th>Nascimento</th>
-                    <th>Telefone</th>
-                    <th>E-mail</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php 
+            <?php if (count($alunos) > 0): ?>
+            <table class="tabela-alunos">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Faixa (Kyu)</th>
+                        <th>Peso (kg)</th>
+                        <th>Nascimento</th>
+                        <th>Telefone</th>
+                        <th>E-mail</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
                     foreach ($alunos as $aluno): 
                     ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($aluno['nome']); ?></td>
-                    <td><?php echo htmlspecialchars($aluno['kyu']); ?></td>
-                    <td><?php echo htmlspecialchars($aluno['peso']); ?></td>
-                    <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($aluno['data_nascimento']))); ?></td>
-                    <td><?php echo htmlspecialchars($aluno['telefone']); ?></td>
-                    <td><?php echo htmlspecialchars($aluno['email']); ?></td>
-                    <td>
-                        <a href="editar_aluno.php?id=<?php echo $aluno['id']; ?>" class="btn-acao editar">Editar</a> |
-                        <a href="excluir_aluno.php?id=<?php echo $aluno['id']; ?>" class="btn-acao excluir"
-                            onclick="return confirm('Tem certeza que deseja excluir este aluno?');">Excluir</a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-        <?php else: ?>
-        <p style="text-align: center; padding: 20px; background-color: #fff3cd; border: 1px solid #ffeeba;">Nenhum aluno
-            encontrado com o filtro aplicado.</p>
-        <?php endif; ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($aluno['nome']); ?></td>
+                        <td><?php echo htmlspecialchars($aluno['kyu']); ?></td>
+                        <td><?php echo htmlspecialchars($aluno['peso']); ?></td>
+                        <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($aluno['data_nascimento']))); ?></td>
+                        <td><?php echo htmlspecialchars($aluno['telefone']); ?></td>
+                        <td><?php echo htmlspecialchars($aluno['email']); ?></td>
+                        <td>
+                            <a href="editar_aluno.php?id=<?php echo $aluno['id']; ?>" class="btn-acao editar">Editar</a>
+                            |
+                            <a href="excluir_aluno.php?id=<?php echo $aluno['id']; ?>" class="btn-acao excluir"
+                                onclick="return confirm('Tem certeza que deseja excluir este aluno?');">Excluir</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            <?php else: ?>
+            <p style="text-align: center; padding: 20px; background-color: #fff3cd; border: 1px solid #ffeeba;">Nenhum
+                aluno
+                encontrado com o filtro aplicado.</p>
+            <?php endif; ?>
 
-    </div>
+        </div>
 
 </body>
 
