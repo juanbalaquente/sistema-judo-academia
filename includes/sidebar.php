@@ -1,8 +1,7 @@
 <?php
 // includes/sidebar.php
 
-// Pega o nome do usuário logado para exibir no menu (definido em login.php)
-// Se a sessão não estiver iniciada ou o nome não estiver definido (caso improvável após auth_check), usa 'Usuário'.
+// Pega o nome do usuário logado para exibir no menu
 $userName = $_SESSION['username'] ?? 'Usuário';
 
 // Obtém o nome do script atual para destacar o item ativo no menu
@@ -23,15 +22,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </a>
             </li>
 
-            <li class="<?php echo ($current_page == 'alunos_list.php') ? 'active' : ''; ?>">
+            <li
+                class="<?php echo ($current_page == 'alunos_list.php' || $current_page == 'editar_aluno.php' || $current_page == 'historico_aluno.php') ? 'active' : ''; ?>">
                 <a href="alunos_list.php">
                     <span class="icon">📋</span> Lista e Busca
                 </a>
             </li>
 
-            <li class="disabled">
-                <a href="#">
-                    <span class="icon">📅</span> Presença (Em Breve)
+            <li class="<?php echo ($current_page == 'presenca.php') ? 'active' : ''; ?>">
+                <a href="presenca.php">
+                    <span class="icon">📅</span> Registro de Presença
                 </a>
             </li>
 
