@@ -9,17 +9,18 @@
 
 :root {
     /* Cores do Judô e Administrativas */
-    --color-primary: #004d99; /* Azul Escuro */
-    --color-secondary: #ffc107; /* Amarelo/Ouro (Faixas) */
-    --color-success: #28a745; /* Verde para sucesso/pago */
-    --color-danger: #dc3545; /* Vermelho para exclusão/erro/atraso */
-    --color-light: #f8f9fa; /* Fundo claro */
-    --color-dark: #343a40; /* Texto escuro */
-    --color-sidebar: #2c3e50; /* Cinza escuro da sidebar */
+    --color-primary: #004d99; 
+    --color-secondary: #ffc107; 
+    --color-success: #28a745; 
+    --color-danger: #dc3545; 
+    --color-light: #f8f9fa; 
+    --color-dark: #343a40; 
+    --color-sidebar: #2c3e50; 
+    --color-border: #adb5bd; /* Novo: Cor cinza escura para bordas */
 }
 
 body {
-    font-family: 'Roboto', 'Arial', sans-serif; 
+    font-family: 'Roboto', 'Arial', sans-serif;
     background-color: var(--color-light);
     color: var(--color-dark);
     line-height: 1.6;
@@ -27,7 +28,7 @@ body {
 }
 
 /* =========================================
-   LAYOUT PRINCIPAL COM SIDEBAR - CORREÇÃO DE ALINHAMENTO
+   LAYOUT PRINCIPAL COM SIDEBAR
    ========================================= */
 .main-wrapper {
     display: flex;
@@ -36,10 +37,8 @@ body {
 
 .content-area {
     flex-grow: 1;
-    /* CORREÇÃO CHAVE: Transforma em container flexível e centraliza o conteúdo */
     display: flex; 
     justify-content: center; 
-    
     padding: 30px; 
     background-color: #f8f8f8;
 }
@@ -47,7 +46,7 @@ body {
 .container {
     max-width: 900px;
     width: 100%;
-    margin: 0; /* Centralização agora é feita pelo content-area */
+    margin: 0; 
     
     background: white;
     padding: 30px;
@@ -58,7 +57,7 @@ body {
 
 
 /* =========================================
-   SIDEBAR (MENU LATERAL)
+   SIDEBAR
    ========================================= */
 .sidebar {
     width: 250px;
@@ -113,11 +112,6 @@ body {
     font-size: 1.2em;
 }
 
-.sidebar-nav li.disabled a {
-    color: #999;
-    cursor: not-allowed;
-}
-
 .sidebar-nav li.logout-link {
     margin-top: 50px;
 }
@@ -128,27 +122,28 @@ body {
     text-align: center;
     justify-content: center;
 }
-.sidebar-nav li.logout-link a:hover {
-    background-color: #a71d2a;
-}
 
 
 /* =========================================
-   CONTEÚDO E COMPONENTES
+   FORMULÁRIOS E INPUTS (CORRIGIDO: MAIOR VISIBILIDADE)
    ========================================= */
-h1 {
-    font-size: 2em;
-    font-weight: 700;
-    text-align: left; /* Garante que o título não centralize */
-}
-
-.link-cadastro {
-    display: none; 
-}
-
-/* Formulário e Inputs */
 .form-cadastro label {
     font-weight: 600;
+}
+
+.form-cadastro input[type="text"],
+.form-cadastro input[type="date"],
+.form-cadastro input[type="number"],
+.form-cadastro input[type="tel"],
+.form-cadastro input[type="email"],
+.form-cadastro select {
+    width: 100%;
+    padding: 12px; /* AUMENTADO: Maior altura para facilitar o toque/clique */
+    margin-top: 5px;
+    border: 1px solid var(--color-border); /* NOVO: Borda mais visível */
+    border-radius: 4px;
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .form-cadastro input:focus,
@@ -159,108 +154,75 @@ h1 {
 }
 
 .btn-submit {
-    padding: 12px 15px;
+    padding: 14px 15px; /* AUMENTADO: Maior altura */
     font-size: 1em;
     border-radius: 4px;
 }
 
-/* Tabela */
+/* Layout de Formulário Flex (Corrigindo o Index.php) */
+.form-row {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 20px; 
+    margin-bottom: 15px;
+}
+
+.form-group {
+    flex: 1 1 auto; 
+    min-width: 150px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+}
+
+
+/* =========================================
+   TABELA DE DADOS (CORRIGIDO: ESTILO EXCEL)
+   ========================================= */
 .tabela-alunos {
-    border-radius: 6px;
+    border-collapse: collapse; /* Essencial para a borda estilo Excel */
+    border-radius: 0; /* Remove o border-radius para bordas contínuas */
+    border: 1px solid var(--color-border); /* Borda externa da tabela */
+    overflow: hidden;
+    width: 100%;
 }
 
 .tabela-alunos th {
     padding: 12px 10px;
     font-weight: 700;
     font-size: 0.9em;
+    border: 1px solid var(--color-border); /* Borda para separar as células (cabeçalho) */
 }
 
 .tabela-alunos td {
     padding: 10px 10px;
     font-size: 0.95em;
+    border: 1px solid var(--color-border); /* Borda para separar as células (dados) */
 }
 
 .tabela-alunos tr:hover td {
-    background-color: #f0f7ff;
+    background-color: #f0f7ff; 
 }
 
-.tabela-alunos td a {
-    font-weight: 600;
-    color: var(--color-primary);
-    text-decoration: underline;
-}
 
-.btn-acao {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8em;
-}
-
-/* Paginação */
-.pagination a, .pagination span {
-    padding: 8px 14px;
-    border-radius: 4px;
-    font-size: 0.9em;
-}
-.pagination .current-page {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Mensagens de Feedback */
+/* --- CÓDIGOS ANTERIORES MANTIDOS --- */
+.h1 { font-size: 2em; font-weight: 700; text-align: left; }
+.link-cadastro { display: none; }
 .success { background-color: #d4edda; color: var(--color-success); padding: 15px; border: 1px solid #c3e6cb; border-radius: 5px; margin-bottom: 20px; font-weight: bold; }
 .error { background-color: #f8d7da; color: var(--color-danger); padding: 15px; border: 1px solid #f5c6cb; border-radius: 5px; margin-bottom: 20px; font-weight: bold; }
-
-/* Status */
 .status-pago, .status-success { color: var(--color-success); font-weight: 600; }
 .status-atrasado, .status-danger { color: var(--color-danger); font-weight: 600; }
 .status-pendente, .status-warning { color: orange; font-weight: 600; }
 
-/* Ajuste de Layout Registro de Presença */
-.presenca-header {
-    display: flex;
-    align-items: center; 
-    justify-content: space-between; 
-    margin-bottom: 25px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #ddd;
-}
-
-.presenca-header form {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.presenca-header label {
-    font-weight: 600;
-    color: var(--color-dark);
-}
-
-.presenca-header h2 {
-    margin: 0; 
-    font-size: 1.3em;
-    color: var(--color-primary);
-    font-weight: 600;
-}
-/* =========================================
-   AJUSTE DE LAYOUT DO FORMULÁRIO DE CADASTRO
-   ========================================= */
-
-.form-row {
-    display: flex;
-    flex-wrap: wrap; /* Permite quebras em telas muito pequenas */
-    gap: 20px; /* Espaço entre os itens da linha */
-    margin-bottom: 15px;
-}
-
-.form-group {
-    /* Define o tamanho base e permite que o item cresça/encolha */
-    flex: 1 1 auto; 
-    min-width: 150px; /* Garante que o campo não fique muito estreito */
-}
-
-/* Garante que inputs e selects dentro do form-group ocupem 100% do espaço da coluna */
-.form-group input,
-.form-group select {
-    width: 100%;
-}
+.presenca-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+.presenca-header form { display: flex; align-items: center; gap: 10px; }
+.presenca-header label { font-weight: 600; color: var(--color-dark); }
+.presenca-header h2 { margin: 0; font-size: 1.3em; color: var(--color-primary); font-weight: 600; }
+/* Paginação e botões de ação */
+.pagination a, .pagination span { padding: 8px 14px; border-radius: 4px; font-size: 0.9em; }
+.pagination .current-page { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+.btn-acao { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; }
+.btn-acao.editar { background-color: var(--color-secondary); color: var(--color-dark); }
+.btn-acao.excluir { background-color: var(--color-danger); color: white; }
