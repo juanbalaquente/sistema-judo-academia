@@ -9,14 +9,14 @@
 
 :root {
     /* Cores do Judô e Administrativas */
-    --color-primary: #004d99; 
-    --color-secondary: #ffc107; 
-    --color-success: #28a745; 
-    --color-danger: #dc3545; 
-    --color-light: #f8f9fa; 
-    --color-dark: #343a40; 
-    --color-sidebar: #2c3e50; 
-    --color-border: #adb5bd; /* Novo: Cor cinza escura para bordas */
+    --color-primary: #004d99; /* Azul Escuro */
+    --color-secondary: #ffc107; /* Amarelo/Ouro (Faixas) */
+    --color-success: #28a745; /* Verde para sucesso/pago */
+    --color-danger: #dc3545; /* Vermelho para exclusão/erro/atraso */
+    --color-light: #f8f9fa; /* Fundo claro */
+    --color-dark: #343a40; /* Texto escuro */
+    --color-sidebar: #2c3e50; /* Cinza escuro da sidebar */
+    --color-border: #adb5bd; /* Cor cinza escura para bordas */
 }
 
 body {
@@ -107,122 +107,107 @@ body {
     padding-left: 15px;
 }
 
-.sidebar-nav .icon {
-    margin-right: 10px;
-    font-size: 1.2em;
-}
-
-.sidebar-nav li.logout-link {
-    margin-top: 50px;
-}
-.sidebar-nav li.logout-link a {
-    background-color: var(--color-danger);
-    margin-top: 50px;
-    border-radius: 0;
-    text-align: center;
-    justify-content: center;
-}
-
-
 /* =========================================
-   FORMULÁRIOS E INPUTS (CORRIGIDO: MAIOR VISIBILIDADE)
-   ========================================= */
-.form-cadastro label {
-    font-weight: 600;
-}
-
-.form-cadastro input[type="text"],
-.form-cadastro input[type="date"],
-.form-cadastro input[type="number"],
-.form-cadastro input[type="tel"],
-.form-cadastro input[type="email"],
-.form-cadastro select {
-    width: 100%;
-    padding: 12px; /* AUMENTADO: Maior altura para facilitar o toque/clique */
-    margin-top: 5px;
-    border: 1px solid var(--color-border); /* NOVO: Borda mais visível */
-    border-radius: 4px;
-    font-size: 1em;
-    transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.form-cadastro input:focus,
-.form-cadastro select:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(0, 77, 153, 0.2); 
-    outline: none;
-}
-
-.btn-submit {
-    padding: 14px 15px; /* AUMENTADO: Maior altura */
-    font-size: 1em;
-    border-radius: 4px;
-}
-
-/* Layout de Formulário Flex (Corrigindo o Index.php) */
-.form-row {
-    display: flex;
-    flex-wrap: wrap; 
-    gap: 20px; 
-    margin-bottom: 15px;
-}
-
-.form-group {
-    flex: 1 1 auto; 
-    min-width: 150px;
-}
-
-.form-group input,
-.form-group select {
-    width: 100%;
-}
-
-
-/* =========================================
-   TABELA DE DADOS (CORRIGIDO: ESTILO EXCEL)
+   TABELA DE DADOS (BASE STYLE - ESTILO EXCEL)
    ========================================= */
 .tabela-alunos {
-    border-collapse: collapse; /* Essencial para a borda estilo Excel */
-    border-radius: 0; /* Remove o border-radius para bordas contínuas */
-    border: 1px solid var(--color-border); /* Borda externa da tabela */
+    border-collapse: collapse; 
+    border-radius: 0; 
+    border: 1px solid var(--color-border); 
     overflow: hidden;
     width: 100%;
+    margin-top: 15px; 
+}
+
+/* Base de estilo para as células de dados e cabeçalho */
+.tabela-alunos th, 
+.tabela-alunos td {
+    padding: 14px 10px; 
+    border: 1px solid var(--color-border); 
+    vertical-align: middle;
 }
 
 .tabela-alunos th {
-    padding: 12px 10px;
     font-weight: 700;
     font-size: 0.9em;
-    border: 1px solid var(--color-border); /* Borda para separar as células (cabeçalho) */
+    color: white;
+    background-color: var(--color-primary); /* Default AZUL */
 }
 
 .tabela-alunos td {
-    padding: 10px 10px;
     font-size: 0.95em;
-    border: 1px solid var(--color-border); /* Borda para separar as células (dados) */
+    background-color: white;
 }
 
 .tabela-alunos tr:hover td {
     background-color: #f0f7ff; 
 }
 
+/* --- ESTILOS ESPECÍFICOS PARA OS CABEÇALHOS DAS TABELAS (CORES) --- */
+
+/* Lista de Alunos e Histórico: AZUL (Default) */
+/* Já é o .tabela-alunos th */
+
+/* Registro de Presença: VERDE ESCURO */
+.tabela-presenca th {
+    background-color: #38761d !important; 
+}
+
+/* Mensalidades Pendentes/Atrasadas: LARANJA */
+.tabela-pendencias th {
+    background-color: #f39c12 !important; 
+}
+
+/* Mensalidades PAGAS: VERDE MÉDIO */
+.tabela-pagos th {
+    background-color: #27ae60 !important; 
+}
+
+/* --- CONSISTÊNCIA VISUAL DOS DADOS (LINHAS) --- */
+
+/* Linhas Pagas (Verde Claro) */
+.status-pago td {
+    background-color: #d4edda !important; /* Cor de fundo */
+    color: #155724; /* Cor do texto */
+}
+.status-pago td:hover {
+    background-color: #c3e6cb !important;
+}
+
+/* Linhas Atrasadas (Vermelho Claro) */
+.status-atrasado td { 
+    background-color: #f8d7da !important;
+    color: var(--color-danger);
+    font-weight: 600;
+}
+.status-atrasado td:hover {
+    background-color: #f5c6cb !important;
+}
+
+/* Linhas Pendentes (Amarelo Claro) */
+.status-pendente td { 
+    background-color: #fff3cd !important;
+    color: #856404;
+}
+.status-pendente td:hover {
+    background-color: #ffeeba !important;
+}
+
+/* --- FIM DA CONSISTÊNCIA VISUAL --- */
+
 
 /* --- CÓDIGOS ANTERIORES MANTIDOS --- */
-.h1 { font-size: 2em; font-weight: 700; text-align: left; }
-.link-cadastro { display: none; }
-.success { background-color: #d4edda; color: var(--color-success); padding: 15px; border: 1px solid #c3e6cb; border-radius: 5px; margin-bottom: 20px; font-weight: bold; }
-.error { background-color: #f8d7da; color: var(--color-danger); padding: 15px; border: 1px solid #f5c6cb; border-radius: 5px; margin-bottom: 20px; font-weight: bold; }
-.status-pago, .status-success { color: var(--color-success); font-weight: 600; }
-.status-atrasado, .status-danger { color: var(--color-danger); font-weight: 600; }
-.status-pendente, .status-warning { color: orange; font-weight: 600; }
-
-.presenca-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
-.presenca-header form { display: flex; align-items: center; gap: 10px; }
-.presenca-header label { font-weight: 600; color: var(--color-dark); }
-.presenca-header h2 { margin: 0; font-size: 1.3em; color: var(--color-primary); font-weight: 600; }
-/* Paginação e botões de ação */
-.pagination a, .pagination span { padding: 8px 14px; border-radius: 4px; font-size: 0.9em; }
-.pagination .current-page { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-.btn-acao { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; }
+.tabela-alunos td a { font-weight: 600; color: var(--color-primary); text-decoration: underline; }
+.btn-acao { padding: 6px 10px; border-radius: 4px; font-size: 0.8em; display: inline-block; }
 .btn-acao.editar { background-color: var(--color-secondary); color: var(--color-dark); }
 .btn-acao.excluir { background-color: var(--color-danger); color: white; }
+.form-cadastro input[type="text"], .form-cadastro input[type="date"], .form-cadastro input[type="number"], .form-cadastro input[type="tel"], .form-cadastro input[type="email"], .form-cadastro select { padding: 12px; }
+.form-row { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 15px; }
+.form-group { flex: 1 1 auto; min-width: 150px; }
+.form-group input, .form-group select { width: 100%; }
+.pagination a, .pagination span { padding: 8px 14px; border-radius: 4px; font-size: 0.9em; }
+.success { background-color: #d4edda; color: var(--color-success); padding: 15px; border: 1px solid #c3e6cb; border-radius: 5px; margin-bottom: 20px; font-weight: bold; }
+.error { background-color: #f8d7da; color: var(--color-danger); padding: 15px; border: 1px solid #f5c6cb; border-radius: 5px; margin-bottom: 20px; font-weight: bold; }
+.presenca-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+.presenca-header form { display: flex; align-items: center; gap: 10px; }
+.presenca-header h2 { margin: 0; font-size: 1.3em; color: var(--color-primary); font-weight: 600; }
