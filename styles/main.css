@@ -8,48 +8,51 @@
 }
 
 :root {
-    /* Cores do Judô */
+    /* Cores do Judô e Administrativas */
     --color-primary: #004d99; /* Azul Escuro */
-    --color-secondary: #ffc107; /* Amarelo/Ouro (para faixas ou destaque) */
-    --color-success: #28a745; /* Verde para sucesso */
-    --color-danger: #dc3545; /* Vermelho para exclusão/erro */
+    --color-secondary: #ffc107; /* Amarelo/Ouro (Faixas) */
+    --color-success: #28a745; /* Verde para sucesso/pago */
+    --color-danger: #dc3545; /* Vermelho para exclusão/erro/atraso */
     --color-light: #f8f9fa; /* Fundo claro */
     --color-dark: #343a40; /* Texto escuro */
+    --color-sidebar: #2c3e50; /* Cinza escuro da sidebar */
 }
 
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Roboto', 'Arial', sans-serif; 
     background-color: var(--color-light);
     color: var(--color-dark);
     line-height: 1.6;
-    padding: 0; /* ESSENCIAL: Remove padding para o sidebar encostar na borda */
+    padding: 0;
 }
 
 /* =========================================
-   LAYOUT PRINCIPAL COM SIDEBAR (FLEXBOX)
+   LAYOUT PRINCIPAL COM SIDEBAR - CORREÇÃO DE ALINHAMENTO
    ========================================= */
 .main-wrapper {
-    display: flex; /* ATIVA O LAYOUT FLEX */
-    min-height: 100vh; /* Ocupa a altura total da tela */
+    display: flex;
+    min-height: 100vh;
 }
 
-/* O conteúdo principal (onde fica o container) */
 .content-area {
-    flex-grow: 1; /* Ocupa todo o espaço restante */
-    padding: 20px;
-    background-color: var(--color-light);
-    overflow-y: auto; /* Permite rolar apenas o conteúdo se for muito longo */
+    flex-grow: 1;
+    /* CORREÇÃO CHAVE: Transforma em container flexível e centraliza o conteúdo */
+    display: flex; 
+    justify-content: center; 
+    
+    padding: 30px; 
+    background-color: #f8f8f8;
 }
 
-/* Ajusta o container para ter margens apenas dentro da content-area */
 .container {
     max-width: 900px;
-    margin: 0; /* REMOVIDO MARGEM CENTRALIZADA */
     width: 100%;
+    margin: 0; /* Centralização agora é feita pelo content-area */
+    
     background: white;
     padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 8px; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
     border-top: 5px solid var(--color-primary);
 }
 
@@ -59,26 +62,23 @@ body {
    ========================================= */
 .sidebar {
     width: 250px;
-    background-color: var(--color-dark); /* Fundo escuro */
+    background-color: var(--color-sidebar);
     color: white;
     padding: 20px 0;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    flex-shrink: 0; /* Impede que o menu diminua */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.25);
+    flex-shrink: 0;
 }
 
 .sidebar-header {
     text-align: center;
-    padding: 0 10px 20px;
-    border-bottom: 1px solid #444;
+    padding: 0 10px 25px;
+    border-bottom: 1px solid #4a6279;
     margin-bottom: 15px;
 }
 .sidebar-header h3 {
     margin-bottom: 5px;
-    color: var(--color-secondary);
-}
-.sidebar-header p {
-    font-size: 0.8em;
-    opacity: 0.8;
+    color: white;
+    font-weight: 700;
 }
 
 .sidebar-nav ul {
@@ -89,15 +89,14 @@ body {
 .sidebar-nav li a {
     display: flex;
     align-items: center;
-    padding: 12px 20px;
-    color: #f8f9fa;
-    text-decoration: none;
-    font-size: 1em;
+    padding: 14px 20px;
+    color: #e0e0e0;
+    font-size: 0.95em;
     transition: background-color 0.3s;
 }
 
 .sidebar-nav li a:hover {
-    background-color: var(--color-primary);
+    background-color: #3b5066;
     color: white;
 }
 
@@ -124,7 +123,10 @@ body {
 }
 .sidebar-nav li.logout-link a {
     background-color: var(--color-danger);
-    color: white;
+    margin-top: 50px;
+    border-radius: 0;
+    text-align: center;
+    justify-content: center;
 }
 .sidebar-nav li.logout-link a:hover {
     background-color: #a71d2a;
@@ -132,54 +134,111 @@ body {
 
 
 /* =========================================
-   AJUSTES DE CONTEÚDO
+   CONTEÚDO E COMPONENTES
    ========================================= */
 h1 {
-    text-align: left; /* Alinhado à esquerda no novo layout */
-    color: var(--color-primary);
-    margin-bottom: 25px;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
+    font-size: 2em;
+    font-weight: 700;
+    text-align: left; /* Garante que o título não centralize */
 }
 
-/* Esconde o link antigo de navegação que agora está no menu */
 .link-cadastro {
     display: none; 
 }
 
+/* Formulário e Inputs */
+.form-cadastro label {
+    font-weight: 600;
+}
 
-/* --- CÓDIGOS ANTERIORES MANTIDOS PARA O RESTO DO SISTEMA --- */
+.form-cadastro input:focus,
+.form-cadastro select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(0, 77, 153, 0.2); 
+    outline: none;
+}
 
-/* MANTIDOS: FORMULÁRIOS E INPUTS */
-.form-cadastro label { display: block; margin-top: 15px; font-weight: 600; color: var(--color-dark); }
-.form-cadastro input[type="text"], .form-cadastro input[type="date"], .form-cadastro input[type="number"], .form-cadastro input[type="tel"], .form-cadastro input[type="email"], .form-cadastro select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ced4da; border-radius: 5px; font-size: 1em; transition: border-color 0.3s, box-shadow 0.3s; }
-.form-cadastro input:focus, .form-cadastro select:focus { border-color: var(--color-primary); box-shadow: 0 0 5px rgba(0, 77, 153, 0.3); outline: none; }
-.btn-submit { display: block; width: 100%; padding: 15px; margin-top: 30px; background-color: var(--color-primary); color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; font-weight: bold; transition: background-color 0.3s; }
-.btn-submit:hover { background-color: #003366; }
+.btn-submit {
+    padding: 12px 15px;
+    font-size: 1em;
+    border-radius: 4px;
+}
 
-/* MANTIDOS: MENSAGENS DE FEEDBACK */
+/* Tabela */
+.tabela-alunos {
+    border-radius: 6px;
+}
+
+.tabela-alunos th {
+    padding: 12px 10px;
+    font-weight: 700;
+    font-size: 0.9em;
+}
+
+.tabela-alunos td {
+    padding: 10px 10px;
+    font-size: 0.95em;
+}
+
+.tabela-alunos tr:hover td {
+    background-color: #f0f7ff;
+}
+
+.tabela-alunos td a {
+    font-weight: 600;
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+.btn-acao {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+}
+
+/* Paginação */
+.pagination a, .pagination span {
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+.pagination .current-page {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Mensagens de Feedback */
 .success { background-color: #d4edda; color: var(--color-success); padding: 15px; border: 1px solid #c3e6cb; border-radius: 5px; margin-bottom: 20px; font-weight: bold; }
 .error { background-color: #f8d7da; color: var(--color-danger); padding: 15px; border: 1px solid #f5c6cb; border-radius: 5px; margin-bottom: 20px; font-weight: bold; }
 
-/* MANTIDOS: LISTAGEM E TABELAS */
-.tabela-alunos { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); border-radius: 5px; overflow: hidden; }
-.tabela-alunos th { background-color: var(--color-primary); color: white; padding: 12px 8px; text-align: left; font-weight: 700; }
-.tabela-alunos td { padding: 10px 8px; border-bottom: 1px solid #eee; background-color: #fff; vertical-align: middle; }
-.tabela-alunos tr:nth-child(even) td { background-color: var(--color-light); }
-.tabela-alunos tr:hover td { background-color: #e9ecef; }
-.tabela-alunos td:last-child { white-space: nowrap; }
-.btn-acao { text-decoration: none; padding: 5px 10px; border-radius: 3px; font-size: 0.85em; font-weight: bold; margin-right: 5px; transition: opacity 0.3s; }
-.btn-acao.editar { background-color: var(--color-secondary); color: var(--color-dark); }
-.btn-acao.excluir { background-color: var(--color-danger); color: white; }
-.btn-acao:hover { opacity: 0.8; }
+/* Status */
+.status-pago, .status-success { color: var(--color-success); font-weight: 600; }
+.status-atrasado, .status-danger { color: var(--color-danger); font-weight: 600; }
+.status-pendente, .status-warning { color: orange; font-weight: 600; }
 
-/* MANTIDOS: FILTRO E PAGINAÇÃO */
-.form-filtro { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; padding: 20px; background-color: #f8f9fa; border: 1px solid #eee; border-radius: 5px; align-items: flex-end; }
-.form-filtro > div { flex: 1; min-width: 200px; }
-.form-filtro button { padding: 10px 20px; min-width: 150px; }
-.btn-clear { background-color: var(--color-danger); color: white; border-radius: 5px; padding: 10px 15px !important; text-decoration: none; font-weight: bold; transition: background-color 0.3s; }
-.btn-clear:hover { background-color: #a71d2a; color: white; }
-.pagination { display: flex; justify-content: center; align-items: center; margin-top: 30px; gap: 5px; }
-.pagination a, .pagination span { padding: 10px 15px; border: 1px solid #ddd; text-decoration: none; color: var(--color-primary); border-radius: 5px; font-weight: bold; transition: background-color 0.3s; }
-.pagination a:hover { background-color: #e9ecef; }
-.pagination .current-page { background-color: var(--color-primary); color: white; border-color: var(--color-primary); pointer-events: none; }
+/* Ajuste de Layout Registro de Presença */
+.presenca-header {
+    display: flex;
+    align-items: center; 
+    justify-content: space-between; 
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.presenca-header form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.presenca-header label {
+    font-weight: 600;
+    color: var(--color-dark);
+}
+
+.presenca-header h2 {
+    margin: 0; 
+    font-size: 1.3em;
+    color: var(--color-primary);
+    font-weight: 600;
+}
