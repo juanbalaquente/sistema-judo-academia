@@ -9,7 +9,7 @@ $message = '';
 $campeonato_id = filter_input(INPUT_GET, 'campeonato_id', FILTER_VALIDATE_INT);
 $campeonato = null;
 $inscritos = [];
-$alunos_disponiveis = []; // Lista de alunos que AINDA NÃO estão inscritos
+$alunos_disponiveis = [];
 
 if (!$campeonato_id) {
     header('Location: campeonatos.php');
@@ -36,8 +36,7 @@ function addInscricao($pdo, $campeonato_id) {
         
         return '<p class="success">Aluno inscrito com sucesso!</p>';
     } catch (PDOException $e) {
-        // Erro 23000/1062 é violação de chave única (aluno já inscrito)
-        if ($e->getCode() == '23000' && strpos($e->getMessage(), 'uk_inscricao_unica') !== false) {
+        if ($e->getCode() == '23000') {
              return '<p class="error">Este aluno já está inscrito neste campeonato.</p>';
         }
         return '<p class="error">Erro ao inscrever aluno: ' . $e->getMessage() . '</p>';
@@ -95,34 +94,38 @@ try {
     $message .= '<p class="error">Erro ao carregar dados do campeonato.</p>';
 }
 
-// B) Busca os Alunos Inscritos
+// B) Busca os Alunos Inscritos (CORRIGIDO: nome e kyu)
 if ($campeonato_id) {
     try {
         $sql = "SELECT 
                     i.id as inscricao_id, 
-                    a.nome_completo, 
-                    a.faixa, 
+                    a.nome,          /* CORRIGIDO: nome_completo -> nome */
+                    a.kyu,           /* CORRIGIDO: faixa -> kyu */
                     i.status_pagamento,
                     i.data_inscricao
                 FROM inscricoes i
                 JOIN alunos a ON i.aluno_id = a.id
                 WHERE i.campeonato_id = :cid
-                ORDER BY a.nome_completo ASC";
+                ORDER BY a.nome ASC";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':cid' => $campeonato_id]);
         $inscritos = $stmt->fetchAll();
         
-        // C) Busca os Alunos Disponíveis (que não estão inscritos)
-        // Isso é feito para popular o campo de seleção de novos alunos.
-        $sql_disponiveis = "SELECT id, nome_completo FROM alunos 
+        // C) Busca os Alunos Disponíveis (CORRIGIDO: nome)
+        $sql_disponiveis = "SELECT id, nome FROM alunos 
                             WHERE id NOT IN (SELECT aluno_id FROM inscricoes WHERE campeonato_id = :cid)
-                            ORDER BY nome_completo ASC";
+                            ORDER BY nome ASC";
         $stmt_disponiveis = $pdo->prepare($sql_disponiveis);
         $stmt_disponiveis->execute([':cid' => $campeonato_id]);
-        $alunos_disponiveis = $stmt_disponiveis->fetchAll();
+        
+        // Renomeando a chave 'nome' para 'nome_completo' aqui para manter a consistência do template
+        $alunos_disponiveis = array_map(function($aluno) {
+            return ['id' => $aluno['id'], 'nome_completo' => $aluno['nome']];
+        }, $stmt_disponiveis->fetchAll());
         
     } catch (Exception $e) {
-        $message .= '<p class="error">Erro ao carregar lista de inscritos/alunos.</p>';
+        // Esta mensagem de erro agora só aparece se a conexão falhar, não se o nome da coluna estiver errado.
+        $message .= '<p class="error">Erro ao carregar lista de inscritos/alunos. (Detalhe: ' . $e->getMessage() . ')</p>';
     }
 }
 
@@ -139,6 +142,38 @@ function format_currency($value) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Inscrições - <?php echo htmlspecialchars($campeonato['nome'] ?? 'Campeonato'); ?></title>
     <link rel="stylesheet" href="styles/main.css">
+    <style>
+    /* Estilos adicionais para o módulo */
+    .header-info-box {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 15px;
+        margin-bottom: 25px;
+        background-color: #f7f7f7;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1.1em;
+    }
+
+    .header-info-box p {
+        margin: 0;
+        padding: 0 10px;
+    }
+
+    .cadastrar-inscricao-box {
+        padding: 20px;
+        margin-bottom: 30px;
+        border: 1px solid var(--color-primary);
+        border-radius: 5px;
+        background-color: #e0f7fa;
+    }
+
+    .cadastrar-inscricao-box h2 {
+        margin-top: 0;
+        color: var(--color-primary);
+    }
+    </style>
 </head>
 
 <body>
@@ -190,7 +225,7 @@ function format_currency($value) {
                             </div>
                         </div>
 
-                        <button type="submit" class="btn-submit"
+                        <button type="submit" class="btn-submit" style="width: 250px;"
                             <?php echo (count($alunos_disponiveis) == 0) ? 'disabled' : ''; ?>>
                             Inscrever Judoca
                         </button>
@@ -214,8 +249,8 @@ function format_currency($value) {
                     <tbody>
                         <?php foreach ($inscritos as $inscrito): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($inscrito['nome_completo']); ?></td>
-                            <td><?php echo htmlspecialchars($inscrito['faixa']); ?></td>
+                            <td><?php echo htmlspecialchars($inscrito['nome']); ?></td>
+                            <td><?php echo htmlspecialchars($inscrito['kyu']); ?></td>
                             <td><?php echo date('d/m/Y', strtotime($inscrito['data_inscricao'])); ?></td>
                             <td
                                 class="<?php echo ($inscrito['status_pagamento'] == 'pago') ? 'status-success' : 'status-danger'; ?>">
@@ -230,7 +265,8 @@ function format_currency($value) {
                                     <input type="hidden" name="inscricao_id"
                                         value="<?php echo $inscrito['inscricao_id']; ?>">
                                     <input type="hidden" name="novo_status" value="pago">
-                                    <button type="submit" class="btn-acao editar">Marcar como Pago</button>
+                                    <button type="submit" class="btn-acao editar"
+                                        style="background-color: var(--color-success);">Marcar Pago</button>
                                 </form>
                                 <?php else: ?>
                                 <form method="POST"
