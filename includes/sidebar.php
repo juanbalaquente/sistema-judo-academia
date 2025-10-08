@@ -1,10 +1,8 @@
 <?php
 // includes/sidebar.php
 
-// Pega o nome do usuário logado para exibir no menu
 $userName = $_SESSION['username'] ?? 'Usuário';
 
-// Obtém o nome do script atual para destacar o item ativo no menu
 $current_page = basename($_SERVER['PHP_SELF']); 
 ?>
 
@@ -16,6 +14,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <nav class="sidebar-nav">
         <ul>
+            <li class="<?php echo ($current_page == 'financeiro.php') ? 'active' : ''; ?>">
+                <a href="financeiro.php">
+                    <span class="icon">💰</span> Controle Financeiro
+                </a>
+            </li>
+
             <li class="<?php echo ($current_page == 'index.php') ? 'active' : ''; ?>">
                 <a href="index.php">
                     <span class="icon">➕</span> Cadastro de Aluno
