@@ -49,7 +49,8 @@ try {
     $total_pages = ceil($total_alunos / $limit);
 
     // 1.6. CONSULTA FINAL (ADICIONANDO LIMIT E OFFSET)
-    $sql = "SELECT id, nome, data_nascimento, peso, kyu, telefone, email " . $sql_base . " ORDER BY nome ASC LIMIT :limit OFFSET :offset";
+    // A coluna valor_mensal não é usada, mas incluída para fins de referência
+    $sql = "SELECT id, nome, data_nascimento, peso, kyu, telefone, email, valor_mensal " . $sql_base . " ORDER BY nome ASC LIMIT :limit OFFSET :offset";
     
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
@@ -165,7 +166,7 @@ function get_filter_url($page) {
                             ?>
                         <tr>
                             <td><a
-                                    href="historico_financeiro.php?id=<?php echo $aluno['id']; ?>"><?php echo htmlspecialchars($aluno['nome']); ?></a>
+                                    href="curriculo_judoca.php?id=<?php echo $aluno['id']; ?>"><?php echo htmlspecialchars($aluno['nome']); ?></a>
                             </td>
                             <td><?php echo htmlspecialchars($aluno['kyu']); ?></td>
                             <td><?php echo htmlspecialchars($aluno['peso']); ?></td>
