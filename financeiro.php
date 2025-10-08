@@ -1,90 +1,147 @@
 <?php
 // =================================================================
-// LÓGICA PHP: PAINEL FINANCEIRO E LISTAGEM DE PENDÊNCIAS E PAGOS
+// LÓGICA PHP: PAINEL FINANCEIRO, LISTAGEM DE PENDÊNCIAS E LANÇAMENTO DE PAGAMENTO
 // =================================================================
 require 'includes/auth_check.php'; 
 require 'includes/db_connect.php'; 
 
 $message = '';
 $pendencias = [];
-$pagos = []; // NOVO: Array para armazenar os pagamentos quitados
+$pagos = []; 
 $hoje = date('Y-m-d');
-$mes_atual = date('Y-m-01'); // Início do mês atual (para filtragem)
+$mes_atual = date('Y-m-01');
 
-// Variáveis para lançamento rápido de pagamento
-$aluno_id_lancamento = filter_input(INPUT_POST, 'aluno_id_lancamento', FILTER_SANITIZE_NUMBER_INT);
-$data_vencimento_lancamento = filter_input(INPUT_POST, 'data_vencimento_lancamento', FILTER_SANITIZE_STRING);
+// 1. Variáveis para o formulário de lançamento Detalhado (via GET ou POST)
+$launch_aluno_id = filter_input(INPUT_GET, 'aluno_id_lancamento', FILTER_SANITIZE_NUMBER_INT);
+$launch_data_vencimento = filter_input(INPUT_GET, 'data_vencimento_lancamento', FILTER_SANITIZE_STRING);
 
-// 1. PROCESSAMENTO RÁPIDO DE PAGAMENTO (Se o formulário for submetido)
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $aluno_id_lancamento && $data_vencimento_lancamento) {
-    try {
-        $valor_mensal = 100.00; // Valor Padrão.
-        $registrado_por = $_SESSION['username'] ?? 'Sistema';
+// Variáveis para o FORMULÁRIO DE AÇÃO (preenchimento automático)
+$aluno_para_lancamento = null;
+$valor_padrao_mensal = 100.00; // Valor de fallback (se o aluno não tiver valor_mensal definido, embora o SQL já defina 100.00)
 
-        // 1.1. Tenta atualizar um status PENDENTE/ATRASADO para PAGO
-        $sql = "UPDATE mensalidades SET 
-                    status = 'pago', 
-                    data_pagamento = :hoje,
-                    registrado_por = :registrado_por
-                WHERE aluno_id = :aluno_id AND data_vencimento = :data_vencimento AND status != 'pago'";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':hoje' => $hoje,
-            ':registrado_por' => $registrado_por,
-            ':aluno_id' => $aluno_id_lancamento,
-            ':data_vencimento' => $data_vencimento_lancamento
-        ]);
+// 2. PROCESSAMENTO FINAL DO PAGAMENTO (Confirmado pelo Formulário Detalhado - POST)
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_payment'])) {
+    
+    $aluno_id = filter_input(INPUT_POST, 'aluno_id', FILTER_SANITIZE_NUMBER_INT);
+    $data_vencimento = filter_input(INPUT_POST, 'data_vencimento', FILTER_SANITIZE_STRING);
+    // Deve ser um float para o banco de dados
+    $valor_pago = filter_input(INPUT_POST, 'valor_pago', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION); 
+    $data_pagamento = filter_input(INPUT_POST, 'data_pagamento', FILTER_SANITIZE_STRING) ?: $hoje;
 
-        if ($stmt->rowCount() > 0) {
-             $message = '<p class="success">✅ Pagamento registrado com sucesso!</p>';
-        } else {
-             // 1.2. Se não encontrou pendência, insere um novo registro de pagamento antecipado (Status PAGO)
-             $sql_insert = "INSERT INTO mensalidades (aluno_id, valor, data_vencimento, data_pagamento, status, registrado_por) 
-                            VALUES (:aluno_id, :valor, :data_vencimento, :data_pagamento, 'pago', :registrado_por)";
-             
-             $stmt_insert = $pdo->prepare($sql_insert);
-             $stmt_insert->execute([
-                 ':aluno_id' => $aluno_id_lancamento,
-                 ':valor' => $valor_mensal,
-                 ':data_vencimento' => $data_vencimento_lancamento,
-                 ':data_pagamento' => $hoje,
-                 ':registrado_por' => $registrado_por
-             ]);
+    if ($valor_pago === false) {
+        $message = '<p class="error">Valor do pagamento inválido. Use ponto para decimais, se necessário (Ex: 100.00)</p>';
+    } else {
+        try {
+            $registrado_por = $_SESSION['username'] ?? 'Sistema';
+            $status = 'pago';
+            
+            // 2.1. Tenta atualizar um status PENDENTE/ATRASADO para PAGO com o NOVO VALOR
+            $sql = "UPDATE mensalidades SET 
+                        status = :status, 
+                        valor = :valor_pago,
+                        data_pagamento = :data_pagamento,
+                        registrado_por = :registrado_por
+                    WHERE aluno_id = :aluno_id AND data_vencimento = :data_vencimento AND status != 'pago'";
+            
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':status' => $status,
+                ':valor_pago' => $valor_pago,
+                ':data_pagamento' => $data_pagamento,
+                ':registrado_por' => $registrado_por,
+                ':aluno_id' => $aluno_id,
+                ':data_vencimento' => $data_vencimento
+            ]);
 
-             $message = '<p class="success">✅ Pagamento antecipado registrado com sucesso!</p>';
-        }
+            if ($stmt->rowCount() > 0) {
+                $message = '<p class="success">✅ Pagamento de **R$ ' . number_format($valor_pago, 2, ',', '.') . '** registrado com sucesso!</p>';
+            } else {
+                // 2.2. Se não encontrou pendência, insere um novo registro (Pagamento antecipado)
+                $sql_insert = "INSERT INTO mensalidades (aluno_id, valor, data_vencimento, data_pagamento, status, registrado_por) 
+                                VALUES (:aluno_id, :valor, :data_vencimento, :data_pagamento, :status, :registrado_por)";
+                
+                $stmt_insert = $pdo->prepare($sql_insert);
+                $stmt_insert->execute([
+                    ':aluno_id' => $aluno_id,
+                    ':valor' => $valor_pago,
+                    ':data_vencimento' => $data_vencimento,
+                    ':data_pagamento' => $data_pagamento,
+                    ':status' => $status,
+                    ':registrado_por' => $registrado_por
+                ]);
+
+                $message = '<p class="success">✅ Pagamento antecipado de **R$ ' . number_format($valor_pago, 2, ',', '.') . '** registrado com sucesso!</p>';
+            }
+
+            // Limpa as variáveis GET para fechar o formulário de lançamento
+            $launch_aluno_id = null;
 
 
-    } catch (Exception $e) {
-        if ($e->getCode() == 23000) {
-            $message = '<p class="error">Atenção: Esta mensalidade já foi registrada como paga!</p>';
-        } else {
-            $message = '<p class="error">Erro ao registrar pagamento: ' . $e->getMessage() . '</p>';
+        } catch (Exception $e) {
+            if ($e->getCode() == 23000) {
+                $message = '<p class="error">Atenção: Esta mensalidade já foi registrada como paga ou a data de referência está duplicada!</p>';
+            } else {
+                $message = '<p class="error">Erro ao registrar pagamento: ' . $e->getMessage() . '</p>';
+            }
         }
     }
 }
 
-// 2. BUSCA GERAL DE ALUNOS COM PENDÊNCIAS E PAGOS
+
+// 3. PRÉ-PREENCHIMENTO DO FORMULÁRIO DE LANÇAMENTO (GET)
+if ($launch_aluno_id && $launch_data_vencimento) {
+    try {
+        // Busca os dados do aluno e o valor que está registrado na tabela de mensalidades
+        $sql_aluno = "
+            SELECT 
+                a.nome, 
+                a.valor_mensal, 
+                m.valor as valor_previsto 
+            FROM alunos a
+            JOIN mensalidades m ON a.id = m.aluno_id
+            WHERE a.id = :id AND m.data_vencimento = :data_vencimento
+        ";
+        $stmt_aluno = $pdo->prepare($sql_aluno);
+        $stmt_aluno->execute([
+            ':id' => $launch_aluno_id,
+            ':data_vencimento' => $launch_data_vencimento
+        ]);
+        $aluno_para_lancamento = $stmt_aluno->fetch();
+
+        if ($aluno_para_lancamento) {
+            // Usa o valor PREVISTO da tabela 'mensalidades' (que veio do valor_mensal) para o formulário
+            $valor_padrao_mensal = $aluno_para_lancamento['valor_previsto'] ?? $aluno_para_lancamento['valor_mensal'] ?? 100.00;
+        }
+
+    } catch (Exception $e) {
+        // Se houver erro, ignora e o formulário de lançamento não será exibido
+        $message = '<p class="error">Erro ao carregar dados para lançamento: ' . $e->getMessage() . '</p>';
+        $launch_aluno_id = null;
+    }
+}
+
+
+// 4. BUSCA GERAL DE PENDÊNCIAS E PAGOS
 try {
-    // 2.1. Lógica para simular a criação automática dos registros do mês (Se não existirem)
+    // 4.1. Lógica para simular a criação automática dos registros do mês (Se não existirem)
+    // O valor do INSERT IGNORE agora puxa o valor_mensal da tabela alunos.
     $pdo->exec("
         INSERT IGNORE INTO mensalidades (aluno_id, valor, data_vencimento, status)
-        SELECT id, 100.00, '{$mes_atual}', 'pendente' FROM alunos
+        SELECT id, valor_mensal, '{$mes_atual}', 'pendente' FROM alunos
         WHERE NOT EXISTS (
             SELECT 1 FROM mensalidades 
             WHERE aluno_id = alunos.id AND data_vencimento = '{$mes_atual}'
         )
     ");
     
-    // Atualiza status para 'atrasado' se a data de vencimento for no passado e ainda for 'pendente'
+    // Atualiza status para 'atrasado'
     $pdo->exec("
         UPDATE mensalidades SET status = 'atrasado' 
         WHERE data_vencimento < '{$hoje}' AND status = 'pendente'
     ");
 
 
-    // 2.2. Busca Alunos com Pagamentos PENDENTES ou ATRASADOS
+    // 4.2. Busca Alunos com Pagamentos PENDENTES ou ATRASADOS
     $sql_pendencias = "
         SELECT 
             a.id, 
@@ -100,7 +157,7 @@ try {
     $stmt_pendencias = $pdo->query($sql_pendencias);
     $pendencias = $stmt_pendencias->fetchAll();
 
-    // 2.3. NOVO: Busca Alunos com Pagamentos PAGOS para o MÊS ATUAL
+    // 4.3. Busca Alunos com Pagamentos PAGOS para o MÊS ATUAL
     $sql_pagos = "
         SELECT 
             a.nome, 
@@ -120,6 +177,10 @@ try {
     $message = '<p class="error">Erro ao carregar dados financeiros: ' . $e->getMessage() . '</p>';
 }
 
+// Funções de formatação
+function format_currency($value) {
+    return 'R$ ' . number_format($value, 2, ',', '.');
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -134,12 +195,10 @@ try {
         background-color: #f39c12;
     }
 
-    /* Laranja para Finanças */
     .tabela-pagos th {
         background-color: #27ae60;
     }
 
-    /* Verde para Pagos */
     .status-atrasado {
         background-color: #f8d7da;
         color: var(--color-danger);
@@ -157,10 +216,30 @@ try {
         color: #155724;
     }
 
-    .form-pagar {
-        margin: 0;
-        padding: 0;
-        display: inline;
+    .form-pagar-detalhado {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .form-pagar-detalhado .form-group {
+        display: inline-block;
+        margin-right: 20px;
+    }
+
+    .form-pagar-detalhado label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-pagar-detalhado input[type="number"],
+    .form-pagar-detalhado input[type="date"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
     }
 
     .section-separator {
@@ -179,6 +258,40 @@ try {
                 <h1>Controle de Mensalidades</h1>
                 <?php echo $message; ?>
 
+                <?php if ($launch_aluno_id && $launch_data_vencimento && $aluno_para_lancamento): ?>
+                <div class="form-pagar-detalhado">
+                    <h2>Confirmar Pagamento: **<?php echo htmlspecialchars($aluno_para_lancamento['nome']); ?>**</h2>
+                    <p>Referência: **<?php echo date('m/Y', strtotime($launch_data_vencimento)); ?>** (Vencimento:
+                        <?php echo date('d/m/Y', strtotime($launch_data_vencimento)); ?>)</p>
+
+                    <form method="POST" action="financeiro.php">
+                        <input type="hidden" name="confirm_payment" value="1">
+                        <input type="hidden" name="aluno_id" value="<?php echo $launch_aluno_id; ?>">
+                        <input type="hidden" name="data_vencimento" value="<?php echo $launch_data_vencimento; ?>">
+
+                        <div class="form-group">
+                            <label for="valor_pago">Valor Pago (R$)</label>
+                            <input type="number" step="0.01" min="0" id="valor_pago" name="valor_pago"
+                                value="<?php echo htmlspecialchars(number_format($valor_padrao_mensal, 2, '.', '')); ?>"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="data_pagamento">Data do Pagamento</label>
+                            <input type="date" id="data_pagamento" name="data_pagamento" value="<?php echo $hoje; ?>"
+                                required>
+                        </div>
+
+                        <button type="submit" class="btn-submit"
+                            style="background-color: var(--color-success); margin-left: 20px; margin-top: 10px;">
+                            Confirmar Lançamento
+                        </button>
+                        <a href="financeiro.php" class="btn-clear"
+                            style="margin-left: 10px; margin-top: 10px; padding: 10px 15px; text-decoration: none;">Cancelar</a>
+                    </form>
+                </div>
+                <?php endif; ?>
+
                 <h2>Alunos com Pagamentos Pendentes/Atrasados (<?php echo count($pendencias); ?>)</h2>
 
                 <?php if (count($pendencias) > 0): ?>
@@ -186,8 +299,9 @@ try {
                     <thead>
                         <tr>
                             <th>Aluno</th>
-                            <th>Vencimento (Ref.)</th>
-                            <th>Valor (R$)</th>
+                            <th>Referência</th>
+                            <th>Vencimento</th>
+                            <th>Valor Previsto (R$)</th>
                             <th>Status</th>
                             <th>Ação</th>
                         </tr>
@@ -195,24 +309,21 @@ try {
                     <tbody>
                         <?php foreach ($pendencias as $pendencia): ?>
                         <?php 
-                                    $vencimento_formatado = date('m/Y', strtotime($pendencia['data_vencimento']));
+                                    $data_ref = date('m/Y', strtotime($pendencia['data_vencimento']));
+                                    $vencimento_data = date('d/m/Y', strtotime($pendencia['data_vencimento']));
                                     $row_class = $pendencia['status'] == 'atrasado' ? 'status-atrasado' : 'status-pendente';
                                 ?>
                         <tr class="<?php echo $row_class; ?>">
                             <td><?php echo htmlspecialchars($pendencia['nome']); ?></td>
-                            <td><?php echo $vencimento_formatado; ?></td>
-                            <td><?php echo number_format($pendencia['valor'], 2, ',', '.'); ?></td>
+                            <td><?php echo $data_ref; ?></td>
+                            <td><?php echo $vencimento_data; ?></td>
+                            <td><?php echo format_currency($pendencia['valor']); ?></td>
                             <td><?php echo ucfirst($pendencia['status']); ?></td>
                             <td>
-                                <form method="POST" action="financeiro.php" class="form-pagar"
-                                    onsubmit="return confirm('Confirmar pagamento de <?php echo $pendencia['nome']; ?> (Ref. <?php echo $vencimento_formatado; ?>)?');">
-                                    <input type="hidden" name="aluno_id_lancamento"
-                                        value="<?php echo $pendencia['id']; ?>">
-                                    <input type="hidden" name="data_vencimento_lancamento"
-                                        value="<?php echo $pendencia['data_vencimento']; ?>">
-                                    <button type="submit" class="btn-acao editar"
-                                        style="background-color: var(--color-success);">Marcar Pago</button>
-                                </form>
+                                <a href="?aluno_id_lancamento=<?php echo $pendencia['id']; ?>&data_vencimento_lancamento=<?php echo $pendencia['data_vencimento']; ?>"
+                                    class="btn-acao editar" style="background-color: var(--color-success);">
+                                    Lançar Pagamento
+                                </a>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -231,7 +342,7 @@ try {
                         <thead>
                             <tr>
                                 <th>Aluno</th>
-                                <th>Valor (R$)</th>
+                                <th>Valor Pago (R$)</th>
                                 <th>Data Pagamento</th>
                                 <th>Mês de Referência</th>
                             </tr>
@@ -240,7 +351,7 @@ try {
                             <?php foreach ($pagos as $pago): ?>
                             <tr class="status-pago">
                                 <td><?php echo htmlspecialchars($pago['nome']); ?></td>
-                                <td><?php echo number_format($pago['valor'], 2, ',', '.'); ?></td>
+                                <td><?php echo format_currency($pago['valor']); ?></td>
                                 <td><?php echo date('d/m/Y', strtotime($pago['data_pagamento'])); ?></td>
                                 <td><?php echo date('m/Y', strtotime($pago['data_vencimento'])); ?></td>
                             </tr>
