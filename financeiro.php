@@ -1,13 +1,15 @@
 <?php
 // =================================================================
-// LÓGICA PHP: PAINEL FINANCEIRO E LISTAGEM DE PENDÊNCIAS
+// LÓGICA PHP: PAINEL FINANCEIRO E LISTAGEM DE PENDÊNCIAS E PAGOS
 // =================================================================
 require 'includes/auth_check.php'; 
 require 'includes/db_connect.php'; 
 
 $message = '';
 $pendencias = [];
+$pagos = []; // NOVO: Array para armazenar os pagamentos quitados
 $hoje = date('Y-m-d');
+$mes_atual = date('Y-m-01'); // Início do mês atual (para filtragem)
 
 // Variáveis para lançamento rápido de pagamento
 $aluno_id_lancamento = filter_input(INPUT_POST, 'aluno_id_lancamento', FILTER_SANITIZE_NUMBER_INT);
@@ -16,10 +18,10 @@ $data_vencimento_lancamento = filter_input(INPUT_POST, 'data_vencimento_lancamen
 // 1. PROCESSAMENTO RÁPIDO DE PAGAMENTO (Se o formulário for submetido)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $aluno_id_lancamento && $data_vencimento_lancamento) {
     try {
-        $valor_mensal = 100.00; // Valor Padrão. Em um sistema completo, isso viria da tabela 'alunos'.
+        $valor_mensal = 100.00; // Valor Padrão.
         $registrado_por = $_SESSION['username'] ?? 'Sistema';
 
-        // 1.1. Atualiza o status de PENDENTE/ATRASADO para PAGO
+        // 1.1. Tenta atualizar um status PENDENTE/ATRASADO para PAGO
         $sql = "UPDATE mensalidades SET 
                     status = 'pago', 
                     data_pagamento = :hoje,
@@ -55,7 +57,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $aluno_id_lancamento && $data_vencim
 
 
     } catch (Exception $e) {
-        // Erro 23000 (Duplicate entry) pode ocorrer se a mensalidade já foi paga.
         if ($e->getCode() == 23000) {
             $message = '<p class="error">Atenção: Esta mensalidade já foi registrada como paga!</p>';
         } else {
@@ -64,13 +65,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $aluno_id_lancamento && $data_vencim
     }
 }
 
-// 2. BUSCA GERAL DE ALUNOS COM PENDÊNCIAS
+// 2. BUSCA GERAL DE ALUNOS COM PENDÊNCIAS E PAGOS
 try {
-    // 2.1. Lógica para garantir que a mensalidade do mês atual e o anterior estão registradas (simulação de cobrança)
-    // Em um sistema completo, isso seria um CRON JOB, mas aqui vamos simular.
-    $mes_atual = date('Y-m-01');
-    $mes_anterior = date('Y-m-01', strtotime('-1 month'));
-
+    // 2.1. Lógica para simular a criação automática dos registros do mês (Se não existirem)
     $pdo->exec("
         INSERT IGNORE INTO mensalidades (aluno_id, valor, data_vencimento, status)
         SELECT id, 100.00, '{$mes_atual}', 'pendente' FROM alunos
@@ -103,8 +100,24 @@ try {
     $stmt_pendencias = $pdo->query($sql_pendencias);
     $pendencias = $stmt_pendencias->fetchAll();
 
+    // 2.3. NOVO: Busca Alunos com Pagamentos PAGOS para o MÊS ATUAL
+    $sql_pagos = "
+        SELECT 
+            a.nome, 
+            m.valor, 
+            m.data_pagamento,
+            m.data_vencimento
+        FROM alunos a
+        JOIN mensalidades m ON a.id = m.aluno_id
+        WHERE m.status = 'pago' AND m.data_vencimento = '{$mes_atual}'
+        ORDER BY a.nome ASC
+    ";
+    $stmt_pagos = $pdo->query($sql_pagos);
+    $pagos = $stmt_pagos->fetchAll();
+
+
 } catch (Exception $e) {
-    $message = '<p class="error">Erro ao carregar pendências: ' . $e->getMessage() . '</p>';
+    $message = '<p class="error">Erro ao carregar dados financeiros: ' . $e->getMessage() . '</p>';
 }
 
 ?>
@@ -121,7 +134,12 @@ try {
         background-color: #f39c12;
     }
 
-    /* Amarelo/Laranja para Finanças */
+    /* Laranja para Finanças */
+    .tabela-pagos th {
+        background-color: #27ae60;
+    }
+
+    /* Verde para Pagos */
     .status-atrasado {
         background-color: #f8d7da;
         color: var(--color-danger);
@@ -134,10 +152,21 @@ try {
         font-weight: bold;
     }
 
+    .status-pago {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
     .form-pagar {
         margin: 0;
         padding: 0;
         display: inline;
+    }
+
+    .section-separator {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 2px solid #ccc;
     }
     </style>
 </head>
@@ -190,8 +219,39 @@ try {
                     </tbody>
                 </table>
                 <?php else: ?>
-                <p class="success">🎉 Nenhum aluno com pendências. O financeiro está em dia!</p>
+                <p class="success">✅ Nenhum aluno com pendências no momento!</p>
                 <?php endif; ?>
+
+                <div class="section-separator">
+                    <h2>Mensalidades Pagas (Ref. Mês Atual: <?php echo date('m/Y'); ?>) (<?php echo count($pagos); ?>)
+                    </h2>
+
+                    <?php if (count($pagos) > 0): ?>
+                    <table class="tabela-alunos tabela-pagos">
+                        <thead>
+                            <tr>
+                                <th>Aluno</th>
+                                <th>Valor (R$)</th>
+                                <th>Data Pagamento</th>
+                                <th>Mês de Referência</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($pagos as $pago): ?>
+                            <tr class="status-pago">
+                                <td><?php echo htmlspecialchars($pago['nome']); ?></td>
+                                <td><?php echo number_format($pago['valor'], 2, ',', '.'); ?></td>
+                                <td><?php echo date('d/m/Y', strtotime($pago['data_pagamento'])); ?></td>
+                                <td><?php echo date('m/Y', strtotime($pago['data_vencimento'])); ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    <?php else: ?>
+                    <p class="info">Ainda não há pagamentos registrados para o mês de **<?php echo date('m/Y'); ?>**.
+                    </p>
+                    <?php endif; ?>
+                </div>
 
             </div>
         </div>
