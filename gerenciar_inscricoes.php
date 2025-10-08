@@ -59,6 +59,23 @@ function updateStatusPagamento($pdo, $inscricao_id, $novo_status) {
     }
 }
 
+// NOVO: Processa Excluir Inscrição
+function deleteInscricao($pdo, $inscricao_id) {
+    try {
+        $sql = "DELETE FROM inscricoes WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':id' => $inscricao_id]);
+        
+        if ($stmt->rowCount() > 0) {
+            return '<p class="success">Inscrição excluída com sucesso!</p>';
+        } else {
+            return '<p class="error">Inscrição não encontrada ou já excluída.</p>';
+        }
+    } catch (Exception $e) {
+        return '<p class="error">Erro ao excluir inscrição: ' . $e->getMessage() . '</p>';
+    }
+}
+
 
 // =================================================================
 // 2. PROCESSAMENTO POST
@@ -71,6 +88,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $novo_status = filter_input(INPUT_POST, 'novo_status', FILTER_SANITIZE_STRING);
         if ($inscricao_id) {
             $message = updateStatusPagamento($pdo, $inscricao_id, $novo_status);
+        }
+    } elseif (isset($_POST['action']) && $_POST['action'] == 'delete_inscricao') { // NOVO: AÇÃO DE EXCLUIR
+        $inscricao_id = filter_input(INPUT_POST, 'inscricao_id', FILTER_VALIDATE_INT);
+        if ($inscricao_id) {
+            $message = deleteInscricao($pdo, $inscricao_id);
+        } else {
+             $message = '<p class="error">ID de inscrição inválido para exclusão.</p>';
         }
     }
 }
@@ -99,8 +123,8 @@ if ($campeonato_id) {
     try {
         $sql = "SELECT 
                     i.id as inscricao_id, 
-                    a.nome,          /* CORRIGIDO: nome_completo -> nome */
-                    a.kyu,           /* CORRIGIDO: faixa -> kyu */
+                    a.nome,          
+                    a.kyu,           
                     i.status_pagamento,
                     i.data_inscricao
                 FROM inscricoes i
@@ -111,20 +135,19 @@ if ($campeonato_id) {
         $stmt->execute([':cid' => $campeonato_id]);
         $inscritos = $stmt->fetchAll();
         
-        // C) Busca os Alunos Disponíveis (CORRIGIDO: nome)
+        // C) Busca os Alunos Disponíveis
         $sql_disponiveis = "SELECT id, nome FROM alunos 
                             WHERE id NOT IN (SELECT aluno_id FROM inscricoes WHERE campeonato_id = :cid)
                             ORDER BY nome ASC";
         $stmt_disponiveis = $pdo->prepare($sql_disponiveis);
         $stmt_disponiveis->execute([':cid' => $campeonato_id]);
         
-        // Renomeando a chave 'nome' para 'nome_completo' aqui para manter a consistência do template
+        // Renomeando a chave 'nome' para 'nome_completo'
         $alunos_disponiveis = array_map(function($aluno) {
             return ['id' => $aluno['id'], 'nome_completo' => $aluno['nome']];
         }, $stmt_disponiveis->fetchAll());
         
     } catch (Exception $e) {
-        // Esta mensagem de erro agora só aparece se a conexão falhar, não se o nome da coluna estiver errado.
         $message .= '<p class="error">Erro ao carregar lista de inscritos/alunos. (Detalhe: ' . $e->getMessage() . ')</p>';
     }
 }
@@ -143,7 +166,6 @@ function format_currency($value) {
     <title>Gerenciar Inscrições - <?php echo htmlspecialchars($campeonato['nome'] ?? 'Campeonato'); ?></title>
     <link rel="stylesheet" href="styles/main.css">
     <style>
-    /* Estilos adicionais para o módulo */
     .header-info-box {
         display: flex;
         justify-content: space-around;
@@ -276,9 +298,22 @@ function format_currency($value) {
                                     <input type="hidden" name="inscricao_id"
                                         value="<?php echo $inscrito['inscricao_id']; ?>">
                                     <input type="hidden" name="novo_status" value="pendente">
-                                    <button type="submit" class="btn-acao excluir">Marcar como Pendente</button>
+                                    <button type="submit" class="btn-acao excluir">Marcar Pendente</button>
                                 </form>
                                 <?php endif; ?>
+
+                                <form method="POST"
+                                    action="gerenciar_inscricoes.php?campeonato_id=<?php echo $campeonato_id; ?>"
+                                    style="display:inline; margin-left: 5px;">
+                                    <input type="hidden" name="action" value="delete_inscricao">
+                                    <input type="hidden" name="inscricao_id"
+                                        value="<?php echo $inscrito['inscricao_id']; ?>">
+                                    <button type="submit" class="btn-acao excluir"
+                                        onclick="return confirm('Tem certeza que deseja EXCLUIR a inscrição de <?php echo htmlspecialchars($inscrito['nome']); ?> deste campeonato? Esta ação é irreversível.');">
+                                        Excluir
+                                    </button>
+                                </form>
+
                             </td>
                         </tr>
                         <?php endforeach; ?>
