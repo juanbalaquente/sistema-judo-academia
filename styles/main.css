@@ -1,0 +1,79 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    text-align: center;
+    color: #333;
+}
+
+.form-cadastro label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.form-cadastro input[type="text"],
+.form-cadastro input[type="date"],
+.form-cadastro input[type="number"],
+.form-cadastro input[type="tel"],
+.form-cadastro input[type="email"],
+.form-cadastro select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Garante que padding e borda não aumentem a largura */
+}
+
+.btn-submit {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin-top: 25px;
+    background-color: #004d99; /* Cor do Judô: Azul */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.1em;
+}
+
+.btn-submit:hover {
+    background-color: #003366;
+}
+
+/* Estilos para as mensagens de feedback */
+.success {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+.link-lista {
+    text-align: center;
+    margin-top: 20px;
+}
