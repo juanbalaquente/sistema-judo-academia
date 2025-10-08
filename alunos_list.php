@@ -1,4 +1,8 @@
 <?php
+// =================================================================
+// 1. LÓGICA PHP: AUTENTICAÇÃO, PAGINAÇÃO, FILTRO E CONSULTA
+// =================================================================
+
 require 'includes/auth_check.php'; 
 require 'includes/db_connect.php'; 
 
@@ -153,7 +157,9 @@ function get_filter_url($page) {
                             foreach ($alunos as $aluno): 
                             ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($aluno['nome']); ?></td>
+                            <td><a
+                                    href="historico_aluno.php?id=<?php echo $aluno['id']; ?>"><?php echo htmlspecialchars($aluno['nome']); ?></a>
+                            </td>
                             <td><?php echo htmlspecialchars($aluno['kyu']); ?></td>
                             <td><?php echo htmlspecialchars($aluno['peso']); ?></td>
                             <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($aluno['data_nascimento']))); ?>
