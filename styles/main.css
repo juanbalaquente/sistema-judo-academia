@@ -242,3 +242,25 @@ h1 {
     color: var(--color-primary);
     font-weight: 600;
 }
+/* =========================================
+   AJUSTE DE LAYOUT DO FORMULÁRIO DE CADASTRO
+   ========================================= */
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap; /* Permite quebras em telas muito pequenas */
+    gap: 20px; /* Espaço entre os itens da linha */
+    margin-bottom: 15px;
+}
+
+.form-group {
+    /* Define o tamanho base e permite que o item cresça/encolha */
+    flex: 1 1 auto; 
+    min-width: 150px; /* Garante que o campo não fique muito estreito */
+}
+
+/* Garante que inputs e selects dentro do form-group ocupem 100% do espaço da coluna */
+.form-group input,
+.form-group select {
+    width: 100%;
+}
