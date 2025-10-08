@@ -254,3 +254,40 @@ body {
     margin-top: 30px;
     width: 100%;
 }
+/* =========================================
+   ESTILOS GERAIS PARA CAMPEONATOS
+   ========================================= */
+
+/* Box de informações do Campeonato */
+.header-info-box {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 25px;
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1.1em;
+}
+.header-info-box p {
+    margin: 0;
+    padding: 0 10px;
+}
+.header-info-box strong {
+    color: var(--color-dark);
+}
+
+/* Formulário de adicionar nova inscrição */
+.cadastrar-inscricao-box {
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 1px solid var(--color-primary); /* Borda azul clara */
+    border-radius: 5px;
+    background-color: #e0f7fa; /* Fundo azul bem claro */
+}
+
+.cadastrar-inscricao-box h2 {
+    margin-top: 0;
+    color: var(--color-primary-dark);
+}
