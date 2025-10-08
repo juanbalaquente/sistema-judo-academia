@@ -22,259 +22,12 @@ body {
     background-color: var(--color-light);
     color: var(--color-dark);
     line-height: 1.6;
-    padding: 20px;
+    padding: 0; /* REMOVIDO PADDING PARA AJUSTAR O SIDEBAR */
 }
 
 /* =========================================
-   CONTAINER E CABEÇALHOS
+   LAYOUT PRINCIPAL COM SIDEBAR (NOVO)
    ========================================= */
-.container {
-    max-width: 900px;
-    margin: 40px auto;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    border-top: 5px solid var(--color-primary); /* Destaque principal */
-}
-
-h1 {
-    text-align: center;
-    color: var(--color-primary);
-    margin-bottom: 25px;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-}
-
-h2 {
-    color: var(--color-dark);
-    margin-top: 25px;
-    margin-bottom: 15px;
-}
-
-/* Estilo para links gerais de navegação */
-a {
-    color: var(--color-primary);
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-a:hover {
-    color: var(--color-secondary);
-}
-
-/* =========================================
-   FORMULÁRIOS E INPUTS
-   ========================================= */
-.form-cadastro label {
-    display: block;
-    margin-top: 15px;
-    font-weight: 600;
-    color: var(--color-dark);
-}
-
-.form-cadastro input[type="text"],
-.form-cadastro input[type="date"],
-.form-cadastro input[type="number"],
-.form-cadastro input[type="tel"],
-.form-cadastro input[type="email"],
-.form-cadastro select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    font-size: 1em;
-    transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.form-cadastro input:focus,
-.form-cadastro select:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 5px rgba(0, 77, 153, 0.3);
-    outline: none;
-}
-
-.btn-submit {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    margin-top: 30px;
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.1em;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-.btn-submit:hover {
-    background-color: #003366; /* Tom mais escuro */
-}
-
-/* =========================================
-   MENSAGENS DE FEEDBACK (SUCESSO/ERRO)
-   ========================================= */
-.success {
-    background-color: #d4edda;
-    color: var(--color-success);
-    padding: 15px;
-    border: 1px solid #c3e6cb;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    font-weight: bold;
-}
-
-.error {
-    background-color: #f8d7da;
-    color: var(--color-danger);
-    padding: 15px;
-    border: 1px solid #f5c6cb;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    font-weight: bold;
-}
-
-/* =========================================
-   LISTAGEM E TABELAS
-   ========================================= */
-.tabela-alunos {
-    width: 100%;
-    border-collapse: separate; /* Permite border-radius */
-    border-spacing: 0;
-    margin-top: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    border-radius: 5px;
-    overflow: hidden; /* Garante que o border-radius funcione */
-}
-
-.tabela-alunos th {
-    background-color: var(--color-primary);
-    color: white;
-    padding: 12px 8px;
-    text-align: left;
-    font-weight: 700;
-}
-
-.tabela-alunos td {
-    padding: 10px 8px;
-    border-bottom: 1px solid #eee;
-    background-color: #fff;
-    vertical-align: middle;
-}
-
-.tabela-alunos tr:nth-child(even) td {
-    background-color: var(--color-light); /* Faixa zebrada */
-}
-
-.tabela-alunos tr:hover td {
-    background-color: #e9ecef;
-}
-
-/* Estilos para a coluna Ações */
-.tabela-alunos td:last-child {
-    white-space: nowrap; /* Evita que os botões quebrem a linha */
-}
-
-/* Botões de Ação na Tabela */
-.btn-acao {
-    text-decoration: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    font-size: 0.85em;
-    font-weight: bold;
-    margin-right: 5px;
-    transition: opacity 0.3s;
-}
-.btn-acao.editar {
-    background-color: var(--color-secondary);
-    color: var(--color-dark);
-}
-.btn-acao.excluir {
-    background-color: var(--color-danger);
-    color: white;
-}
-.btn-acao:hover {
-    opacity: 0.8;
-}
-
-
-/* =========================================
-   FILTRO E PAGINAÇÃO
-   ========================================= */
-.form-filtro {
-    display: flex;
-    flex-wrap: wrap; /* Permite quebrar em telas menores */
-    gap: 15px;
-    margin-bottom: 25px;
-    padding: 20px;
-    background-color: #f8f9fa; /* Fundo mais claro para a área de filtro */
-    border: 1px solid #eee;
-    border-radius: 5px;
-    align-items: flex-end;
-}
-.form-filtro > div {
-    flex: 1; /* Distribui o espaço entre os campos */
-    min-width: 200px;
-}
-.form-filtro button {
-    padding: 10px 20px;
-    min-width: 150px;
-}
-
-/* Estilo para link "Limpar Filtro" */
-.btn-clear {
-    background-color: var(--color-danger);
-    color: white;
-    border-radius: 5px;
-    padding: 10px 15px !important;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-.btn-clear:hover {
-    background-color: #a71d2a;
-    color: white;
-}
-
-/* PAGINAÇÃO */
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 30px;
-    gap: 5px;
-}
-.pagination a, .pagination span {
-    padding: 10px 15px;
-    border: 1px solid #ddd;
-    text-decoration: none;
-    color: var(--color-primary);
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-.pagination a:hover {
-    background-color: #e9ecef;
-}
-.pagination .current-page {
-    background-color: var(--color-primary);
-    color: white;
-    border-color: var(--color-primary);
-    pointer-events: none; /* Desabilita clique na página atual */
-}
-
-/* =========================================
-   LAYOUT PRINCIPAL COM SIDEBAR
-   ========================================= */
-
-/* Remove margem do body para o sidebar encostar na borda */
-body {
-    padding: 0;
-}
-
 .main-wrapper {
     display: flex;
     min-height: 100vh; /* Ocupa a altura total da tela */
@@ -289,12 +42,19 @@ body {
 
 /* Ajusta o container para ter margens apenas dentro da content-area */
 .container {
-    margin: 0; /* Remove margem centralizada */
+    max-width: 900px;
+    margin: 0; /* REMOVIDO MARGEM CENTRALIZADA */
     width: 100%;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-top: 5px solid var(--color-primary);
 }
 
+
 /* =========================================
-   SIDEBAR (MENU LATERAL)
+   SIDEBAR (MENU LATERAL) (NOVO)
    ========================================= */
 .sidebar {
     width: 250px;
@@ -313,7 +73,7 @@ body {
 }
 .sidebar-header h3 {
     margin-bottom: 5px;
-    color: var(--color-secondary); /* Destaque o título */
+    color: var(--color-secondary);
 }
 .sidebar-header p {
     font-size: 0.8em;
@@ -336,7 +96,7 @@ body {
 }
 
 .sidebar-nav li a:hover {
-    background-color: var(--color-primary); /* Azul no hover */
+    background-color: var(--color-primary);
     color: white;
 }
 
@@ -344,7 +104,7 @@ body {
     background-color: var(--color-primary);
     color: white;
     font-weight: bold;
-    border-left: 5px solid var(--color-secondary); /* Destaque ativo */
+    border-left: 5px solid var(--color-secondary);
     padding-left: 15px;
 }
 
@@ -359,7 +119,7 @@ body {
 }
 
 .sidebar-nav li.logout-link {
-    margin-top: 50px; /* Separar o link Sair */
+    margin-top: 50px;
 }
 .sidebar-nav li.logout-link a {
     background-color: var(--color-danger);
@@ -368,3 +128,61 @@ body {
 .sidebar-nav li.logout-link a:hover {
     background-color: #a71d2a;
 }
+
+
+/* =========================================
+   ITENS DE CONTEÚDO (MUDANÇAS MENORES)
+   ========================================= */
+h1 {
+    text-align: left; /* Alinhado à esquerda para não conflitar com a largura do container */
+    color: var(--color-primary);
+    margin-bottom: 25px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* O link de cadastro/listagem precisa de ajuste, pois agora está no menu */
+.link-cadastro {
+    display: none; /* Esconde este link, pois a navegação agora é feita pelo menu */
+}
+
+
+/* =========================================
+   MANTENDO ESTILOS ANTERIORES
+   ========================================= */
+/* Mantidos para formulários, botões, tabelas e filtros, que funcionam no novo layout */
+/* ... (muitos estilos antigos aqui, como .success, .error, .tabela-alunos, .form-filtro) ... */
+
+/* MANTIDOS: FORMULÁRIOS E INPUTS */
+.form-cadastro label { display: block; margin-top: 15px; font-weight: 600; color: var(--color-dark); }
+.form-cadastro input[type="text"], .form-cadastro input[type="date"], .form-cadastro input[type="number"], .form-cadastro input[type="tel"], .form-cadastro input[type="email"], .form-cadastro select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ced4da; border-radius: 5px; font-size: 1em; transition: border-color 0.3s, box-shadow 0.3s; }
+.form-cadastro input:focus, .form-cadastro select:focus { border-color: var(--color-primary); box-shadow: 0 0 5px rgba(0, 77, 153, 0.3); outline: none; }
+.btn-submit { display: block; width: 100%; padding: 15px; margin-top: 30px; background-color: var(--color-primary); color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; font-weight: bold; transition: background-color 0.3s; }
+.btn-submit:hover { background-color: #003366; }
+
+/* MANTIDOS: MENSAGENS DE FEEDBACK */
+.success { background-color: #d4edda; color: var(--color-success); padding: 15px; border: 1px solid #c3e6cb; border-radius: 5px; margin-bottom: 20px; font-weight: bold; }
+.error { background-color: #f8d7da; color: var(--color-danger); padding: 15px; border: 1px solid #f5c6cb; border-radius: 5px; margin-bottom: 20px; font-weight: bold; }
+
+/* MANTIDOS: LISTAGEM E TABELAS */
+.tabela-alunos { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); border-radius: 5px; overflow: hidden; }
+.tabela-alunos th { background-color: var(--color-primary); color: white; padding: 12px 8px; text-align: left; font-weight: 700; }
+.tabela-alunos td { padding: 10px 8px; border-bottom: 1px solid #eee; background-color: #fff; vertical-align: middle; }
+.tabela-alunos tr:nth-child(even) td { background-color: var(--color-light); }
+.tabela-alunos tr:hover td { background-color: #e9ecef; }
+.tabela-alunos td:last-child { white-space: nowrap; }
+.btn-acao { text-decoration: none; padding: 5px 10px; border-radius: 3px; font-size: 0.85em; font-weight: bold; margin-right: 5px; transition: opacity 0.3s; }
+.btn-acao.editar { background-color: var(--color-secondary); color: var(--color-dark); }
+.btn-acao.excluir { background-color: var(--color-danger); color: white; }
+.btn-acao:hover { opacity: 0.8; }
+
+/* MANTIDOS: FILTRO E PAGINAÇÃO */
+.form-filtro { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; padding: 20px; background-color: #f8f9fa; border: 1px solid #eee; border-radius: 5px; align-items: flex-end; }
+.form-filtro > div { flex: 1; min-width: 200px; }
+.form-filtro button { padding: 10px 20px; min-width: 150px; }
+.btn-clear { background-color: var(--color-danger); color: white; border-radius: 5px; padding: 10px 15px !important; text-decoration: none; font-weight: bold; transition: background-color 0.3s; }
+.btn-clear:hover { background-color: #a71d2a; color: white; }
+.pagination { display: flex; justify-content: center; align-items: center; margin-top: 30px; gap: 5px; }
+.pagination a, .pagination span { padding: 10px 15px; border: 1px solid #ddd; text-decoration: none; color: var(--color-primary); border-radius: 5px; font-weight: bold; transition: background-color 0.3s; }
+.pagination a:hover { background-color: #e9ecef; }
+.pagination .current-page { background-color: var(--color-primary); color: white; border-color: var(--color-primary); pointer-events: none; }
