@@ -13,3 +13,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 // Você pode adicionar informações úteis, como o nome de usuário, ao escopo global
 // $current_user_name = $_SESSION['username']; 
 ?>
+
+
+
+
+<!-- // INSERT INTO usuarios (username, password_hash, nome)
+VALUES ('admin', 'COLE A STRING LONGA DO HASH AQUI', 'Seu Nome Admin'); -->
