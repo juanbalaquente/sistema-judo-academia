@@ -3,6 +3,9 @@
 // 1. LÓGICA PHP: CONEXÃO, FILTRO E CONSULTA AO BANCO DE DADOS
 // =================================================================
 
+// INCLUSÃO DA CHECAGEM DE AUTENTICAÇÃO (Adicionado no passo anterior, se você o seguiu)
+// require 'includes/auth_check.php'; 
+
 require 'includes/db_connect.php'; 
 
 $alunos = []; 
@@ -17,14 +20,12 @@ $params = [];
 // 1.1. Verifica e Captura os Dados do Filtro (se vierem da URL)
 if (isset($_GET['nome']) && $_GET['nome'] !== '') {
     $search_nome = trim($_GET['nome']);
-    // Adiciona a condição WHERE para buscar por nome. O LIKE permite busca parcial.
     $where_clauses[] = "nome LIKE :nome";
     $params[':nome'] = '%' . $search_nome . '%';
 }
 
 if (isset($_GET['kyu']) && $_GET['kyu'] !== '') {
     $search_kyu = $_GET['kyu'];
-    // Adiciona a condição WHERE para buscar pela faixa exata.
     $where_clauses[] = "kyu = :kyu";
     $params[':kyu'] = $search_kyu;
 }
@@ -121,6 +122,23 @@ try {
         border-radius: 4px;
         cursor: pointer;
     }
+
+    .btn-acao {
+        text-decoration: none;
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 0.9em;
+    }
+
+    .editar {
+        background-color: #ffc107;
+        color: #333;
+    }
+
+    .excluir {
+        background-color: #dc3545;
+        color: white;
+    }
     </style>
 </head>
 
@@ -134,7 +152,6 @@ try {
         </div>
 
         <?php 
-        // Exibe mensagem de erro, se houver
         echo $message; 
         ?>
 
@@ -185,7 +202,6 @@ try {
             </thead>
             <tbody>
                 <?php 
-                    // Loop PHP para percorrer o array $alunos e criar uma linha para cada um
                     foreach ($alunos as $aluno): 
                     ?>
                 <tr>
