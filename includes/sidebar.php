@@ -20,6 +20,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </a>
             </li>
 
+            <li class="<?php echo ($current_page == 'campeonatos.php') ? 'active' : ''; ?>">
+                <a href="campeonatos.php">
+                    <span class="icon">🏆</span> Campeonatos
+                </a>
+            </li>
+
             <li class="<?php echo ($current_page == 'index.php') ? 'active' : ''; ?>">
                 <a href="index.php">
                     <span class="icon">➕</span> Cadastro de Aluno
@@ -27,7 +33,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </li>
 
             <li
-                class="<?php echo ($current_page == 'alunos_list.php' || $current_page == 'editar_aluno.php' || $current_page == 'historico_aluno.php') ? 'active' : ''; ?>">
+                class="<?php echo ($current_page == 'alunos_list.php' || $current_page == 'editar_aluno.php' || $current_page == 'historico_financeiro.php') ? 'active' : ''; ?>">
                 <a href="alunos_list.php">
                     <span class="icon">📋</span> Lista e Busca
                 </a>
