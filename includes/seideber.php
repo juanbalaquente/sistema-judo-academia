@@ -2,6 +2,7 @@
 // includes/sidebar.php
 
 // Pega o nome do usuário logado para exibir no menu (definido em login.php)
+// Se a sessão não estiver iniciada ou o nome não estiver definido (caso improvável após auth_check), usa 'Usuário'.
 $userName = $_SESSION['username'] ?? 'Usuário';
 
 // Obtém o nome do script atual para destacar o item ativo no menu

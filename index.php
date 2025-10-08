@@ -65,6 +65,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
+
+
     <div class="container">
         <h1>Sistema de Cadastro de Alunos - Judô</h1>
 
