@@ -211,3 +211,46 @@ body {
 .presenca-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
 .presenca-header form { display: flex; align-items: center; gap: 10px; }
 .presenca-header h2 { margin: 0; font-size: 1.3em; color: var(--color-primary); font-weight: 600; }
+/* =========================================
+   ESTILOS ESPECÍFICOS DA TELA DE LOGIN
+   ========================================= */
+
+/* Centraliza o container na tela inteira */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: var(--color-light); /* Cor de fundo */
+}
+
+/* Ajusta o container de login */
+.container-login {
+    max-width: 450px;
+    margin: auto; /* Garante que funcione em navegadores antigos */
+    text-align: center; /* Centraliza o título */
+    padding: 40px;
+}
+
+.container-login h1 {
+    text-align: center;
+    font-size: 2.2em; /* Título maior */
+    color: var(--color-dark);
+    margin-bottom: 30px;
+}
+
+.form-login .form-row {
+    /* Remove margem da linha flex no login para deixar o layout mais compacto */
+    margin-bottom: 10px; 
+}
+
+.form-login .form-group {
+    text-align: left; /* Garante que os labels fiquem alinhados */
+}
+
+.btn-login {
+    /* Botão de login fica centralizado e com margem top */
+    margin-top: 30px;
+    width: 100%;
+}
