@@ -18,12 +18,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $telefone         = filter_input(INPUT_POST, 'telefone', FILTER_SANITIZE_STRING);
     $email            = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
     
-    // NOVO: Coleta do valor, permitindo casas decimais.
+    // Coleta do valor, permitindo casas decimais.
     $valor_mensal     = filter_input(INPUT_POST, 'valor_mensal', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 
-    // Se o campo não foi preenchido, define o padrão (deve ser o mesmo do seu SQL: 100.00)
+    // Se o campo não foi preenchido, define o padrão
     if (empty($valor_mensal) && $valor_mensal !== 0.00 && $valor_mensal !== '0') {
-        $valor_mensal = 100.00; 
+        $valor_mensal = 100.00; // Valor padrão
     }
 
     // 2. Validação Básica
@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ':kyu'            => $kyu,
                 ':telefone'       => $telefone,
                 ':email'          => $email,
-                ':valor_mensal'   => $valor_mensal // NOVO
+                ':valor_mensal'   => $valor_mensal 
             ]);
 
             $message = '<p class="success">🥋 Aluno **' . htmlspecialchars($nome) . '** cadastrado com sucesso!</p>';
@@ -93,44 +93,69 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h2>Novo Cadastro</h2>
                 <form method="POST" action="index.php" class="form-cadastro">
 
-                    <label for="nome">Nome Completo:</label>
-                    <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars($nome); ?>" required>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2 1 350px;"> <label for="nome">Nome Completo:</label>
+                            <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars($nome); ?>"
+                                required>
+                        </div>
 
-                    <label for="data_nascimento">Data de Nascimento:</label>
-                    <input type="date" id="data_nascimento" name="data_nascimento"
-                        value="<?php echo htmlspecialchars($data_nascimento); ?>" required>
+                        <div class="form-group">
+                            <label for="data_nascimento">Data de Nascimento:</label>
+                            <input type="date" id="data_nascimento" name="data_nascimento"
+                                value="<?php echo htmlspecialchars($data_nascimento); ?>" required>
+                        </div>
 
-                    <label for="peso">Peso (kg):</label>
-                    <input type="number" id="peso" name="peso" step="0.1" min="1"
-                        value="<?php echo htmlspecialchars($peso); ?>" placeholder="Ex: 75.5">
+                        <div class="form-group">
+                            <label for="peso">Peso (kg):</label>
+                            <input type="number" id="peso" name="peso" step="0.1" min="1"
+                                value="<?php echo htmlspecialchars($peso); ?>" placeholder="Ex: 75.5">
+                        </div>
+                    </div>
 
-                    <label for="kyu">Faixa (Kyu):</label>
-                    <select id="kyu" name="kyu" required>
-                        <option value="">Selecione a Faixa</option>
-                        <option value="Branca" <?php if ($kyu == 'Branca') echo 'selected'; ?>>Branca</option>
-                        <option value="Cinza" <?php if ($kyu == 'Cinza') echo 'selected'; ?>>Cinza</option>
-                        <option value="Azul" <?php if ($kyu == 'Azul') echo 'selected'; ?>>Azul</option>
-                        <option value="Amarela" <?php if ($kyu == 'Amarela') echo 'selected'; ?>>Amarela</option>
-                        <option value="Laranja" <?php if ($kyu == 'Laranja') echo 'selected'; ?>>Laranja</option>
-                        <option value="Verde" <?php if ($kyu == 'Verde') echo 'selected'; ?>>Verde</option>
-                        <option value="Roxa" <?php if ($kyu == 'Roxa') echo 'selected'; ?>>Roxa</option>
-                        <option value="Marrom" <?php if ($kyu == 'Marrom') echo 'selected'; ?>>Marrom</option>
-                        <option value="Preta" <?php if ($kyu == 'Preta') echo 'selected'; ?>>Preta (Shodan)</option>
-                    </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="kyu">Faixa (Kyu):</label>
+                            <select id="kyu" name="kyu" required>
+                                <option value="">Selecione a Faixa</option>
+                                <option value="Branca" <?php if ($kyu == 'Branca') echo 'selected'; ?>>Branca</option>
+                                <option value="Cinza" <?php if ($kyu == 'Cinza') echo 'selected'; ?>>Cinza</option>
+                                <option value="Azul" <?php if ($kyu == 'Azul') echo 'selected'; ?>>Azul</option>
+                                <option value="Amarela" <?php if ($kyu == 'Amarela') echo 'selected'; ?>>Amarela
+                                </option>
+                                <option value="Laranja" <?php if ($kyu == 'Laranja') echo 'selected'; ?>>Laranja
+                                </option>
+                                <option value="Verde" <?php if ($kyu == 'Verde') echo 'selected'; ?>>Verde</option>
+                                <option value="Roxa" <?php if ($kyu == 'Roxa') echo 'selected'; ?>>Roxa</option>
+                                <option value="Marrom" <?php if ($kyu == 'Marrom') echo 'selected'; ?>>Marrom</option>
+                                <option value="Preta" <?php if ($kyu == 'Preta') echo 'selected'; ?>>Preta (Shodan)
+                                </option>
+                            </select>
+                        </div>
 
-                    <label for="telefone">Telefone:</label>
-                    <input type="tel" id="telefone" name="telefone" value="<?php echo htmlspecialchars($telefone); ?>"
-                        placeholder="(XX) XXXXX-XXXX">
+                        <div class="form-group">
+                            <label for="telefone">Telefone:</label>
+                            <input type="tel" id="telefone" name="telefone"
+                                value="<?php echo htmlspecialchars($telefone); ?>" placeholder="(XX) XXXXX-XXXX">
+                        </div>
 
-                    <label for="email">E-mail:</label>
-                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required
-                        placeholder="aluno@exemplo.com">
+                        <div class="form-group" style="flex: 2 1 300px;"> <label for="email">E-mail:</label>
+                            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>"
+                                required placeholder="aluno@exemplo.com">
+                        </div>
+                    </div>
 
-                    <label for="valor_mensal">Valor da Mensalidade (R$)</label>
-                    <input type="number" step="0.01" min="0" id="valor_mensal" name="valor_mensal"
-                        value="<?php echo htmlspecialchars($valor_mensal); ?>" placeholder="100.00 (Opcional)">
+                    <div class="form-row" style="align-items: flex-end;">
+                        <div class="form-group" style="flex: 0 1 200px;"> <label for="valor_mensal">Valor da Mensalidade
+                                (R$)</label>
+                            <input type="number" step="0.01" min="0" id="valor_mensal" name="valor_mensal"
+                                value="<?php echo htmlspecialchars($valor_mensal); ?>" placeholder="100.00 (Opcional)">
+                        </div>
 
-                    <button type="submit" class="btn-submit">Cadastrar Aluno</button>
+                        <div class="form-group" style="flex: 0 1 200px;"> <button type="submit"
+                                class="btn-submit">Cadastrar Aluno</button>
+                        </div>
+                    </div>
+
                 </form>
 
             </div>
