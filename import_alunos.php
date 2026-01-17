@@ -121,10 +121,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
         if ($handle === false) {
             $message = '<p class="error">Nao foi possivel abrir o arquivo CSV.</p>';
         } else {
-            $header_row = fgetcsv($handle, 0, $delimiter);
-            if ($header_row === false) {
+            $header_raw = fgets($handle);
+            if ($header_raw === false) {
                 $message = '<p class="error">CSV vazio ou sem cabecalho.</p>';
             } else {
+                $delimiter_counts = [
+                    ';' => substr_count($header_raw, ';'),
+                    ',' => substr_count($header_raw, ','),
+                    "\t" => substr_count($header_raw, "\t"),
+                ];
+                arsort($delimiter_counts);
+                $best_delimiter = key($delimiter_counts);
+                if ($delimiter_counts[$best_delimiter] > 0) {
+                    $delimiter = $best_delimiter;
+                }
+
+                $header_row = str_getcsv($header_raw, $delimiter);
+                if (count($header_row) === 1 && strpos($header_row[0], $delimiter) !== false) {
+                    $header_row = str_getcsv($header_row[0], $delimiter);
+                }
+
                 $map = [
                     'id' => null,
                     'idade' => null,
@@ -183,6 +199,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
 
                     $line = 1;
                     while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+                        if (count($row) === 1 && strpos($row[0], $delimiter) !== false) {
+                            $row = str_getcsv($row[0], $delimiter);
+                        }
                         $line++;
                         if (count($row) === 1 && trim((string)$row[0]) === '') {
                             continue;
@@ -269,8 +288,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
                     }
 
                     if ($result['inserted'] > 0) {
+                        $delim_label = $delimiter === "\t" ? 'TAB' : $delimiter;
                         $message = '<p class="success">Importacao concluida. Inseridos: ' . $result['inserted'] .
-                                   ', Ignorados: ' . $result['skipped'] . ', Total lido: ' . $result['total'] . '.</p>';
+                                   ', Ignorados: ' . $result['skipped'] . ', Total lido: ' . $result['total'] .
+                                   '. Separador detectado: ' . $delim_label . '.</p>';
                     } else {
                         $message = '<p class="error">Nenhum registro foi inserido.</p>';
                     }
