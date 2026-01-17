@@ -10,6 +10,7 @@ $pendencias = [];
 $pagos = []; 
 $hoje = date('Y-m-d');
 $mes_atual = date('Y-m-01');
+$mes_proximo = date('Y-m-01', strtotime('+1 month'));
 
 // 1. Variáveis para o formulário de lançamento Detalhado (via GET ou POST)
 $launch_aluno_id = filter_input(INPUT_GET, 'aluno_id_lancamento', FILTER_SANITIZE_NUMBER_INT);
@@ -216,7 +217,9 @@ try {
             m.data_vencimento
         FROM alunos a
         JOIN mensalidades m ON a.id = m.aluno_id
-        WHERE m.status = 'pago' AND m.data_vencimento = '{$mes_atual}'
+        WHERE m.status = 'pago'
+          AND m.data_vencimento >= '{$mes_atual}'
+          AND m.data_vencimento < '{$mes_proximo}'
         ORDER BY a.nome ASC
     ";
     $stmt_pagos = $pdo->query($sql_pagos);

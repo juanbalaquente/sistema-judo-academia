@@ -45,6 +45,7 @@ O sistema oferece uma solução robusta com as seguintes funcionalidades:
 * **Módulo de Login:** Acesso restrito por usuário e senha criptografada (`password_hash`).
 * **Sidebar:** Menu de navegação lateral consistente em todas as páginas.
 * **Exportação CSV:** Botão para exportar a lista completa de alunos para planilhas (Excel/Google Sheets).
+* **Importação CSV:** Tela para importar alunos em massa (CSV com separador `;`).
 
 ---
 
@@ -223,3 +224,24 @@ VALUES ('meu_login', 'COLE_O_HASH_AQUI', 'Meu Nome');
 INSERT INTO usuarios (username, password_hash, nome)
 VALUES ('admin', '$2y$10$G4jd5G5qDIpVim6EiXZN5e0sMOiQi7yGAYjgnrLpDdx4C7tOZQqCm', 'Administrador');
 ```
+
+---
+
+## Importacao em Massa (CSV)
+
+1. Acesse `alunos_list.php` e clique em **Importar Alunos (CSV)**.
+2. Baixe o modelo para preencher os dados.
+3. Envie o arquivo CSV com separador `;`.
+
+### Formato do CSV
+
+Cabecalho esperado (pode variar, mas estes campos sao reconhecidos):
+
+```
+Nome Completo;Data Nasc.;Peso (kg);Faixa (Kyu);Telefone;Email;Mensalidade Prev. (R$);Tipo Sanguineo;Nome do Pai;Telefone do Pai;Nome da Mae;Telefone da Mae;Foto Path;Termo Aceito;Termo Data;Termo Nome
+```
+
+Regras:
+- Datas aceitam `dd/mm/aaaa` ou `yyyy-mm-dd`.
+- Emails duplicados sao ignorados.
+- "Termo Aceito" aceita `1/0` ou `sim/nao`.

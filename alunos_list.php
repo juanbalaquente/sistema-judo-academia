@@ -110,6 +110,10 @@ function get_filter_url($page) {
                 <?php echo $message; ?>
 
                 <div style="text-align: right; margin-bottom: 20px;">
+                    <a href="import_alunos.php" class="btn-submit"
+                        style="width: auto; padding: 10px 20px; background-color: var(--color-primary); margin-right: 10px;">
+                        Importar Alunos (CSV)
+                    </a>
                     <a href="export_alunos.php" class="btn-submit"
                         style="width: auto; padding: 10px 20px; background-color: var(--color-success);">
                         Exportar Tabela Completa (CSV)

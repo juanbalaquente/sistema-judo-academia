@@ -1,0 +1,6 @@
+Nome Completo;Data Nasc.;Peso (kg);Faixa (Kyu);Telefone;Email;Mensalidade Prev. (R$);Tipo Sanguineo;Nome do Pai;Telefone do Pai;Nome da Mae;Telefone da Mae;Foto Path;Termo Aceito;Termo Data;Termo Nome
+Ana Souza;12/03/2008;45,50;Amarela;11990000001;ana.souza.teste@example.com;120,00;O+;Carlos Souza;11980000001;Mariana Souza;11970000001;;sim;10/01/2024;Ana Souza
+Bruno Lima;22/07/2006;62,30;Laranja;11990000002;bruno.lima.teste@example.com;120,00;A+;Paulo Lima;11980000002;Renata Lima;11970000002;;sim;11/01/2024;Bruno Lima
+Camila Alves;05/11/2010;40,10;Branca;11990000003;camila.alves.teste@example.com;100,00;B+;Sergio Alves;11980000003;Lucia Alves;11970000003;;;nao;;
+Daniel Rocha;18/02/2005;70,20;Verde;11990000004;daniel.rocha.teste@example.com;130,00;O-;Marcos Rocha;11980000004;Tania Rocha;11970000004;;sim;12/01/2024;Daniel Rocha
+Eduarda Nunes;30/09/2009;50,00;Azul;11990000005;eduarda.nunes.teste@example.com;110,00;AB+;Rafael Nunes;11980000005;Carla Nunes;11970000005;;sim;13/01/2024;Eduarda Nunes
