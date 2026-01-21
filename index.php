@@ -7,6 +7,7 @@ require 'includes/db_connect.php';
 
 $message = ''; 
 $nome = $data_nascimento = $peso = $kyu = $telefone = $email = $valor_mensal = '';
+$numero_zempo = $numero_fmj = '';
 $tipo_sanguineo = $nome_pai = $nome_mae = $telefone_pai = $telefone_mae = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -18,6 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $kyu              = filter_input(INPUT_POST, 'kyu', FILTER_SANITIZE_STRING);
     $telefone         = filter_input(INPUT_POST, 'telefone', FILTER_SANITIZE_STRING);
     $email            = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+    $numero_zempo     = filter_input(INPUT_POST, 'numero_zempo', FILTER_SANITIZE_STRING);
+    $numero_fmj       = filter_input(INPUT_POST, 'numero_fmj', FILTER_SANITIZE_STRING);
     $tipo_sanguineo   = filter_input(INPUT_POST, 'tipo_sanguineo', FILTER_SANITIZE_STRING);
     $nome_pai         = filter_input(INPUT_POST, 'nome_pai', FILTER_SANITIZE_STRING);
     $nome_mae         = filter_input(INPUT_POST, 'nome_mae', FILTER_SANITIZE_STRING);
@@ -40,10 +43,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // 3. Prepara a Query SQL (agora inclui valor_mensal)
             $sql = "INSERT INTO alunos (
                         nome, data_nascimento, peso, kyu, telefone, email, valor_mensal,
+                        numero_zempo, numero_fmj,
                         tipo_sanguineo, nome_pai, nome_mae, telefone_pai, telefone_mae
                     ) 
                     VALUES (
                         :nome, :nascimento, :peso, :kyu, :telefone, :email, :valor_mensal,
+                        :numero_zempo, :numero_fmj,
                         :tipo_sanguineo, :nome_pai, :nome_mae, :telefone_pai, :telefone_mae
                     )";
             
@@ -58,17 +63,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ':telefone'       => $telefone,
                 ':email'          => $email,
                 ':valor_mensal'   => $valor_mensal,
+                ':numero_zempo'   => $numero_zempo,
+                ':numero_fmj'     => $numero_fmj,
                 ':tipo_sanguineo' => $tipo_sanguineo,
                 ':nome_pai'       => $nome_pai,
                 ':nome_mae'       => $nome_mae,
                 ':telefone_pai'   => $telefone_pai,
                 ':telefone_mae'   => $telefone_mae
             ]);
+            $aluno_id = (int)$pdo->lastInsertId();
+            if ($aluno_id > 0) {
+                $stmt_update = $pdo->prepare("UPDATE alunos SET academia_id = :academia_id WHERE id = :id AND academia_id IS NULL");
+                $stmt_update->execute([
+                    ':academia_id' => $aluno_id,
+                    ':id' => $aluno_id
+                ]);
+            }
 
             $message = '<p class="success">OK Aluno **' . htmlspecialchars($nome) . '** cadastrado com sucesso!</p>';
             
             // Limpa as variáveis para resetar o formulário após o sucesso
             $nome = $data_nascimento = $peso = $kyu = $telefone = $email = $valor_mensal = '';
+            $numero_zempo = $numero_fmj = '';
             $tipo_sanguineo = $nome_pai = $nome_mae = $telefone_pai = $telefone_mae = '';
             
         } catch (Exception $e) {
@@ -137,6 +153,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <select id="kyu" name="kyu" required>
                                 <option value="">Selecione a Faixa</option>
                                 <option value="Branca" <?php if ($kyu == 'Branca') echo 'selected'; ?>>Branca</option>
+                                <option value="Branca e Rosa" <?php if ($kyu == 'Branca e Rosa') echo 'selected'; ?>>
+                                    Branca e Rosa</option>
                                 <option value="Cinza" <?php if ($kyu == 'Cinza') echo 'selected'; ?>>Cinza</option>
                                 <option value="Azul" <?php if ($kyu == 'Azul') echo 'selected'; ?>>Azul</option>
                                 <option value="Amarela" <?php if ($kyu == 'Amarela') echo 'selected'; ?>>Amarela
@@ -164,6 +182,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
 
                     <div class="form-row">
+                        <div class="form-group">
+                            <label for="numero_zempo">Número do Zempo:</label>
+                            <input type="text" id="numero_zempo" name="numero_zempo"
+                                value="<?php echo htmlspecialchars($numero_zempo); ?>" placeholder="Ex: 123456">
+                        </div>
+                        <div class="form-group">
+                            <label for="numero_fmj">Número da FMJ:</label>
+                            <input type="text" id="numero_fmj" name="numero_fmj"
+                                value="<?php echo htmlspecialchars($numero_fmj); ?>" placeholder="Ex: 987654">
+                        </div>
                         <div class="form-group">
                             <label for="tipo_sanguineo">Tipo sanguineo:</label>
                             <input type="text" id="tipo_sanguineo" name="tipo_sanguineo"
