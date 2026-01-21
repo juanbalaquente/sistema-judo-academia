@@ -94,6 +94,8 @@ if (isset($_GET['download_template'])) {
         'Telefone',
         'Email',
         'Mensalidade Prev. (R$)',
+        'Numero do Zempo',
+        'Numero da FMJ',
         'Tipo Sanguineo',
         'Nome do Pai',
         'Telefone do Pai',
@@ -160,6 +162,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
                     'mensalidade' => 'valor_mensal',
                     'mensalidadeprevrs' => 'valor_mensal',
                     'valormensal' => 'valor_mensal',
+                    'numerozempo' => 'numero_zempo',
+                    'numerodozempo' => 'numero_zempo',
+                    'numerofmj' => 'numero_fmj',
+                    'numerodafmj' => 'numero_fmj',
                     'tiposanguineo' => 'tipo_sanguineo',
                     'nomedopai' => 'nome_pai',
                     'telefonedopai' => 'telefone_pai',
@@ -187,10 +193,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
                 } else {
                     $sql = "INSERT INTO alunos (
                                 nome, data_nascimento, peso, kyu, telefone, email, valor_mensal,
+                                numero_zempo, numero_fmj,
                                 tipo_sanguineo, nome_pai, nome_mae, telefone_pai, telefone_mae,
                                 foto_path, termo_aceito, termo_data, termo_nome
                             ) VALUES (
                                 :nome, :data_nascimento, :peso, :kyu, :telefone, :email, :valor_mensal,
+                                :numero_zempo, :numero_fmj,
                                 :tipo_sanguineo, :nome_pai, :nome_mae, :telefone_pai, :telefone_mae,
                                 :foto_path, :termo_aceito, :termo_data, :termo_nome
                             )";
@@ -268,6 +276,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
                             ':telefone' => isset($col_index['telefone']) ? trim((string)$row[$col_index['telefone']]) : null,
                             ':email' => $email,
                             ':valor_mensal' => $valor_mensal,
+                            ':numero_zempo' => isset($col_index['numero_zempo']) ? trim((string)$row[$col_index['numero_zempo']]) : null,
+                            ':numero_fmj' => isset($col_index['numero_fmj']) ? trim((string)$row[$col_index['numero_fmj']]) : null,
                             ':tipo_sanguineo' => isset($col_index['tipo_sanguineo']) ? trim((string)$row[$col_index['tipo_sanguineo']]) : null,
                             ':nome_pai' => isset($col_index['nome_pai']) ? trim((string)$row[$col_index['nome_pai']]) : null,
                             ':nome_mae' => isset($col_index['nome_mae']) ? trim((string)$row[$col_index['nome_mae']]) : null,
@@ -281,6 +291,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
 
                         try {
                             $stmt_insert->execute($data);
+                            $insert_id = (int)$pdo->lastInsertId();
+                            if ($insert_id > 0) {
+                                $stmt_update = $pdo->prepare("UPDATE alunos SET academia_id = :academia_id WHERE id = :id AND academia_id IS NULL");
+                                $stmt_update->execute([
+                                    ':academia_id' => $insert_id,
+                                    ':id' => $insert_id
+                                ]);
+                            }
                             $result['inserted']++;
                         } catch (Exception $e) {
                             $errors[] = "Linha {$line}: erro ao inserir ({$e->getMessage()}).";
@@ -354,8 +372,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
                     <h2>Campos aceitos no CSV</h2>
                     <p>
                         Nome Completo, Data Nasc., Peso (kg), Faixa (Kyu), Telefone, Email,
-                        Mensalidade Prev. (R$), Tipo Sanguineo, Nome do Pai, Telefone do Pai,
-                        Nome da Mae, Telefone da Mae, Foto Path, Termo Aceito, Termo Data, Termo Nome.
+                        Mensalidade Prev. (R$), Numero do Zempo, Numero da FMJ, Tipo Sanguineo, Nome do Pai,
+                        Telefone do Pai, Nome da Mae, Telefone da Mae, Foto Path, Termo Aceito, Termo Data,
+                        Termo Nome.
                     </p>
                     <p>Datas aceitam <strong>dd/mm/aaaa</strong> ou <strong>yyyy-mm-dd</strong>.</p>
                 </div>

@@ -19,13 +19,14 @@ try {
     // 2. Cabecalho das colunas
     $header = [
         'ID', 'Nome Completo', 'Data Nasc.', 'Idade', 'Peso (kg)', 'Faixa (Kyu)',
-        'Telefone', 'Email', 'Mensalidade Prev. (R$)',
+        'Telefone', 'Email', 'Mensalidade Prev. (R$)', 'Numero do Zempo', 'Numero da FMJ', 'ID da Academia',
         'Tipo Sanguineo', 'Nome do Pai', 'Telefone do Pai', 'Nome da Mae', 'Telefone da Mae'
     ];
     fputcsv($output, $header, $delimiter);
 
     // 3. Consulta com novos campos
     $sql = "SELECT id, nome, data_nascimento, peso, kyu, telefone, email, valor_mensal,
+                   numero_zempo, numero_fmj, academia_id,
                    tipo_sanguineo, nome_pai, telefone_pai, nome_mae, telefone_mae
             FROM alunos ORDER BY nome ASC";
     $stmt = $pdo->query($sql);
@@ -58,6 +59,9 @@ try {
             $safe_csv($row['telefone']),
             $safe_csv($row['email']),
             $safe_csv($valor_mensal_br),
+            $safe_csv($row['numero_zempo']),
+            $safe_csv($row['numero_fmj']),
+            $safe_csv($row['academia_id']),
             $safe_csv($row['tipo_sanguineo']),
             $safe_csv($row['nome_pai']),
             $safe_csv($row['telefone_pai']),

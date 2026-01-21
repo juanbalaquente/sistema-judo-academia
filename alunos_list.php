@@ -133,6 +133,9 @@ function get_filter_url($page) {
                             <option value="">Todas as Faixas</option>
                             <option value="Branca" <?php if ($search_kyu == 'Branca') echo 'selected'; ?>>Branca
                             </option>
+                            <option value="Branca e Rosa" <?php if ($search_kyu == 'Branca e Rosa') echo 'selected'; ?>>
+                                Branca e Rosa
+                            </option>
                             <option value="Cinza" <?php if ($search_kyu == 'Cinza') echo 'selected'; ?>>Cinza</option>
                             <option value="Azul" <?php if ($search_kyu == 'Azul') echo 'selected'; ?>>Azul</option>
                             <option value="Amarela" <?php if ($search_kyu == 'Amarela') echo 'selected'; ?>>Amarela

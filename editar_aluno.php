@@ -18,6 +18,7 @@ $aluno_id = $_GET['id'];
 // Busca os dados atuais do aluno (AGORA INCLUI valor_mensal)
 try {
     $sql_select = "SELECT id, nome, data_nascimento, peso, kyu, telefone, email, valor_mensal,
+                          numero_zempo, numero_fmj, academia_id,
                           tipo_sanguineo, nome_pai, nome_mae, telefone_pai, telefone_mae
                    FROM alunos WHERE id = :id";
     $stmt_select = $pdo->prepare($sql_select);
@@ -42,6 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $aluno) {
     $kyu              = filter_input(INPUT_POST, 'kyu', FILTER_SANITIZE_STRING);
     $telefone         = filter_input(INPUT_POST, 'telefone', FILTER_SANITIZE_STRING);
     $email            = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+    $numero_zempo     = filter_input(INPUT_POST, 'numero_zempo', FILTER_SANITIZE_STRING);
+    $numero_fmj       = filter_input(INPUT_POST, 'numero_fmj', FILTER_SANITIZE_STRING);
     $tipo_sanguineo   = filter_input(INPUT_POST, 'tipo_sanguineo', FILTER_SANITIZE_STRING);
     $nome_pai         = filter_input(INPUT_POST, 'nome_pai', FILTER_SANITIZE_STRING);
     $nome_mae         = filter_input(INPUT_POST, 'nome_mae', FILTER_SANITIZE_STRING);
@@ -70,6 +73,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $aluno) {
                             telefone = :telefone, 
                             email = :email,
                             valor_mensal = :valor_mensal,
+                            numero_zempo = :numero_zempo,
+                            numero_fmj = :numero_fmj,
                             tipo_sanguineo = :tipo_sanguineo,
                             nome_pai = :nome_pai,
                             nome_mae = :nome_mae,
@@ -88,6 +93,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $aluno) {
                 ':telefone'   => $telefone,
                 ':email'      => $email,
                 ':valor_mensal'   => $valor_mensal,
+                ':numero_zempo'   => $numero_zempo,
+                ':numero_fmj'     => $numero_fmj,
                 ':tipo_sanguineo' => $tipo_sanguineo,
                 ':nome_pai'       => $nome_pai,
                 ':nome_mae'       => $nome_mae,
@@ -106,6 +113,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $aluno) {
             $aluno['telefone'] = $telefone;
             $aluno['email'] = $email;
             $aluno['valor_mensal'] = $valor_mensal;
+            $aluno['numero_zempo'] = $numero_zempo;
+            $aluno['numero_fmj'] = $numero_fmj;
             $aluno['tipo_sanguineo'] = $tipo_sanguineo;
             $aluno['nome_pai'] = $nome_pai;
             $aluno['nome_mae'] = $nome_mae;
@@ -178,6 +187,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $aluno) {
                             <label for="kyu">Faixa (Kyu):</label>
                             <select id="kyu" name="kyu" required>
                                 <option value="Branca" <?php if ($aluno['kyu'] == 'Branca') echo 'selected'; ?>>Branca</option>
+                                <option value="Branca e Rosa" <?php if ($aluno['kyu'] == 'Branca e Rosa') echo 'selected'; ?>>Branca e Rosa</option>
                                 <option value="Cinza" <?php if ($aluno['kyu'] == 'Cinza') echo 'selected'; ?>>Cinza</option>
                                 <option value="Azul" <?php if ($aluno['kyu'] == 'Azul') echo 'selected'; ?>>Azul</option>
                                 <option value="Amarela" <?php if ($aluno['kyu'] == 'Amarela') echo 'selected'; ?>>Amarela</option>
@@ -203,6 +213,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $aluno) {
                     </div>
 
                     <div class="form-row">
+                        <div class="form-group">
+                            <label for="numero_zempo">Número do Zempo:</label>
+                            <input type="text" id="numero_zempo" name="numero_zempo"
+                                value="<?php echo htmlspecialchars($aluno['numero_zempo'] ?? ''); ?>"
+                                placeholder="Ex: 123456">
+                        </div>
+                        <div class="form-group">
+                            <label for="numero_fmj">Número da FMJ:</label>
+                            <input type="text" id="numero_fmj" name="numero_fmj"
+                                value="<?php echo htmlspecialchars($aluno['numero_fmj'] ?? ''); ?>"
+                                placeholder="Ex: 987654">
+                        </div>
                         <div class="form-group">
                             <label for="tipo_sanguineo">Tipo sanguineo:</label>
                             <input type="text" id="tipo_sanguineo" name="tipo_sanguineo"
