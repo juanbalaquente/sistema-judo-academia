@@ -38,7 +38,9 @@ function get_nome_mes($mes_num) {
 
 try {
     // 2. BUSCA DADOS BÁSICOS DO ALUNO (INFORMAÇÕES DE CADASTRO E FINANCEIRO PADRÃO)
-    $sql_aluno = "SELECT nome, kyu, data_nascimento, email, telefone, valor_mensal FROM alunos WHERE id = :id";
+    $sql_aluno = "SELECT nome, kyu, data_nascimento, email, telefone, valor_mensal,
+                         numero_zempo, numero_fmj, academia_id
+                  FROM alunos WHERE id = :id";
     $stmt_aluno = $pdo->prepare($sql_aluno);
     $stmt_aluno->execute([':id' => $aluno_id]);
     $aluno = $stmt_aluno->fetch();
@@ -168,6 +170,12 @@ try {
                             <?php echo date('d/m/Y', strtotime($aluno['data_nascimento'])); ?></p>
                         <p><strong>Telefone:</strong> <?php echo htmlspecialchars($aluno['telefone']); ?></p>
                         <p><strong>E-mail:</strong> <?php echo htmlspecialchars($aluno['email']); ?></p>
+                        <p><strong>Número do Zempo:</strong>
+                            <?php echo htmlspecialchars($aluno['numero_zempo'] ?? ''); ?></p>
+                        <p><strong>Número da FMJ:</strong>
+                            <?php echo htmlspecialchars($aluno['numero_fmj'] ?? ''); ?></p>
+                        <p><strong>ID da Academia:</strong>
+                            <?php echo htmlspecialchars($aluno['academia_id'] ?? ''); ?></p>
                         <p><strong>Mensalidade Padrão:</strong> <?php echo format_currency($aluno['valor_mensal']); ?>
                         </p>
 

@@ -239,6 +239,7 @@ try {
 
     if ($selected_id) {
         $sql_aluno = "SELECT id, nome, kyu, data_nascimento, peso, telefone, email, valor_mensal,
+                             numero_zempo, numero_fmj, academia_id,
                              foto_path, termo_aceito, termo_data, termo_nome,
                              tipo_sanguineo, nome_pai, nome_mae, telefone_pai, telefone_mae
                       FROM alunos WHERE id = :id";
@@ -372,6 +373,9 @@ function format_currency($value) {
                     <p><strong>Peso (kg):</strong> <?php echo htmlspecialchars($aluno['peso']); ?></p>
                     <p><strong>Telefone:</strong> <?php echo htmlspecialchars($aluno['telefone']); ?></p>
                     <p><strong>E-mail:</strong> <?php echo htmlspecialchars($aluno['email']); ?></p>
+                    <p><strong>Número do Zempo:</strong> <?php echo htmlspecialchars($aluno['numero_zempo'] ?? ''); ?></p>
+                    <p><strong>Número da FMJ:</strong> <?php echo htmlspecialchars($aluno['numero_fmj'] ?? ''); ?></p>
+                    <p><strong>ID da Academia:</strong> <?php echo htmlspecialchars($aluno['academia_id'] ?? ''); ?></p>
                     <p><strong>Tipo sanguineo:</strong> <?php echo htmlspecialchars($aluno['tipo_sanguineo'] ?? ''); ?></p>
                     <p><strong>Nome do pai:</strong> <?php echo htmlspecialchars($aluno['nome_pai'] ?? ''); ?></p>
                     <p><strong>Telefone do pai:</strong> <?php echo htmlspecialchars($aluno['telefone_pai'] ?? ''); ?></p>
